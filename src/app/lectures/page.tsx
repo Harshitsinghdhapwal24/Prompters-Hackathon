@@ -8,11 +8,12 @@ import {
   ArrowUpDown,
 } from 'lucide-react';
 import { getStoredLectures } from '@/lib/storage';
+import { DEMO_LECTURES } from '@/data/demoLectures';
 import { Lecture } from '@/types/lecture';
 import RecentLectures from '@/components/dashboard/RecentLectures';
 
 export default function MyLecturesPage() {
-  const [lectures, setLectures] = useState<Lecture[]>([]);
+  const [lectures, setLectures] = useState<Lecture[]>(DEMO_LECTURES);
   const [search, setSearch] = useState('');
   const [selectedSubject, setSelectedSubject] = useState<string>('All');
   const [sortBy, setSortBy] = useState<'newest' | 'duration' | 'title'>('newest');

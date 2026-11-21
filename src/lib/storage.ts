@@ -1,8 +1,8 @@
 import { Lecture, UserSettings } from '@/types/lecture';
 import { DEMO_LECTURES } from '@/data/demoLectures';
 
-const LECTURES_STORAGE_KEY = 'lecturelens_lectures_v1';
-const SETTINGS_STORAGE_KEY = 'lecturelens_settings_v1';
+const LECTURES_STORAGE_KEY = 'lecturelens_lectures_v2';
+const SETTINGS_STORAGE_KEY = 'lecturelens_settings_v2';
 
 export const DEFAULT_SETTINGS: UserSettings = {
   geminiApiKey: '',

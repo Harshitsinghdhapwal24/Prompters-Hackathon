@@ -4,12 +4,13 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Award, ArrowRight } from 'lucide-react';
 import { getStoredLectures } from '@/lib/storage';
+import { DEMO_LECTURES } from '@/data/demoLectures';
 import { Lecture } from '@/types/lecture';
 import PracticeQuiz from '@/components/study/PracticeQuiz';
 
 export default function QuizHubPage() {
-  const [lectures, setLectures] = useState<Lecture[]>([]);
-  const [selectedId, setSelectedId] = useState<string>('');
+  const [lectures, setLectures] = useState<Lecture[]>(DEMO_LECTURES);
+  const [selectedId, setSelectedId] = useState<string>(DEMO_LECTURES[0]?.id || '');
 
   useEffect(() => {
     const data = getStoredLectures();

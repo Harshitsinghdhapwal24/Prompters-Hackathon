@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { BookOpen, ArrowLeft, Loader2 } from 'lucide-react';
 import { getStoredLectures } from '@/lib/storage';
+import { DEMO_LECTURES } from '@/data/demoLectures';
 import { Lecture } from '@/types/lecture';
 import StudyMaterialViewer from '@/components/study/StudyMaterialViewer';
 
@@ -14,8 +15,10 @@ export default function LectureDetailPage() {
   const lectureId = params?.id as string;
   const initialTab = searchParams?.get('tab') || 'summary';
 
-  const [lecture, setLecture] = useState<Lecture | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [lecture, setLecture] = useState<Lecture | null>(() => {
+    return DEMO_LECTURES.find((l) => l.id === lectureId) || null;
+  });
+  const [loading, setLoading] = useState(!DEMO_LECTURES.some((l) => l.id === lectureId));
 
   useEffect(() => {
     if (lectureId) {

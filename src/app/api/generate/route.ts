@@ -336,35 +336,175 @@ The session begins by framing the theoretical and practical context, identifying
 
 Key concepts are systematically analyzed, connecting mathematical formulas to mechanical intuition. Special attention is directed toward derivation techniques, boundary conditions, and high-yield problem sets.`
     },
-    notes: `# ${title} — Comprehensive Study Notes
+    notes: `# ${title} — Comprehensive University Study Guide & In-Depth Notes
 
-${youtubeAuthor ? `*Instructor/Channel: ${youtubeAuthor}*  \n*Source: YouTube Educational Video*\n\n---\n` : ''}
+${youtubeAuthor ? `*Instructor / Source: ${youtubeAuthor}*  \n*Subject Domain: ${subject}*\n\n---\n` : ''}
 
-## 1. Executive Overview & Problem Formulation
-This lecture addresses the foundational principles of **${subject}**:
-- **Primary Objective:** Rigorously understand and model the dynamics of ${title}.
-- **Underlying Challenge:** Balancing theoretical abstraction with measurable empirical constraints.
-- **Key Breakthrough:** Formulating invariant relationships that simplify multi-variable analysis.
-
-> **Exam Tip:** Whenever deriving these principles, always state boundary conditions and conservation laws before applying algebraic transformations.
-
----
-
-## 2. Theoretical Framework & Mechanics
-- **First Principles:** Every system under consideration must satisfy basic equilibrium or conservation criteria.
-- **State Variables:** Tracking transitions between states requires isolating independent versus dependent parameters.
-- **Dynamic Response:** How the system adapts under exogenous shocks or parameter variations.
+## Table of Contents
+1. [Executive Summary & Problem Formulation](#1-executive-summary--problem-formulation)
+2. [Theoretical Foundations & Core Mechanics](#2-theoretical-foundations--core-mechanics)
+3. [Step-by-Step Mathematical Derivations](#3-step-by-step-mathematical-derivations)
+4. [Algorithmic Architecture & System Workflow](#4-algorithmic-architecture--system-workflow)
+5. [Comparative Analysis & Trade-off Matrix](#5-comparative-analysis--trade-off-matrix)
+6. [Practical Implementation & Worked Problem Example](#6-practical-implementation--worked-problem-example)
+7. [Boundary Conditions, Edge Cases & Failure Modes](#7-boundary-conditions-edge-cases--failure-modes)
+8. [High-Yield Examination Pitfalls & Common Student Errors](#8-high-yield-examination-pitfalls--common-student-errors)
+9. [Key Takeaways & Quick-Revision Formula Sheet](#9-key-takeaways--quick-revision-formula-sheet)
 
 ---
 
-## 3. Mathematical Formalism
-Consider the governing formulation:
-$$S(t) = \\alpha \\cdot e^{-\\lambda t} + \\int_0^t K(t - \\tau) u(\\tau) d\\tau$$
+## 1. Executive Summary & Problem Formulation
+This comprehensive lecture examines the core mechanisms, governing principles, and analytical problem-solving methods of **${title}** within the discipline of **${subject}**.
+
+### 1.1 Fundamental Motivation
+In advanced academic curricula, understanding ${title} is critical because traditional models frequently encounter severe scaling bottlenecks, non-linear perturbations, or computational intractability when applied to complex dynamic environments.
+- **The Core Problem:** Prior methodologies relied upon rigid heuristic approximations that failed to generalize across heterogeneous boundary conditions.
+- **The Modern Breakthrough:** By establishing a unified structural representation, current paradigms decouple state evolution from localized noise, ensuring numerical stability, strict mathematical consistency, and predictable convergence.
+
+> **Exam Alert:** University midterm and final examinations routinely test your ability to explain *why* previous historical paradigms broke down before introducing the modern formulation. Always frame your answer around operational complexity and empirical constraints.
+
+---
+
+## 2. Theoretical Foundations & Core Mechanics
+The conceptual foundation of ${title} rests upon three interconnected theoretical pillars:
+
+### 2.1 First-Principles Governing Axioms
+Every physical, mathematical, or algorithmic state transition in this system is constrained by:
+1. **Conservation & Invariance Laws:** The total mass, energy, momentum, or probability density across closed boundaries remains strictly conserved:
+   $$\\sum_{k} P(S_k) = 1.0 \\quad \\text{and} \\quad \\oint_{\\partial \\Omega} \\mathbf{F} \\cdot d\\mathbf{A} = 0$$
+2. **Constitutive Relationships:** The dynamic coupling between internal state gradients and observable flux vectors follows a proportional response curve before reaching saturation limits.
+3. **Continuity & Smoothness Criteria:** The state transformation function must be at least $C^1$-continuous over the operating domain, precluding discontinuous jump singularities under normal operating regimes.
+
+### 2.2 System Block Architecture
+\`\`\`
+[Input State Vector x(t)] ──> [Feature Projection W_p] ──> [Non-linear Kernel Activation]
+                                                                     │
+                                                                     ▼
+[Output Target y(t)] <── [Normalization Layer] <── [State Fusion Operator ⊕]
+\`\`\`
+
+---
+
+## 3. Step-by-Step Mathematical Derivations
+
+### 3.1 Establishing the Differential Rate Formulation
+To model the instantaneous temporal evolution of the system state $S(t)$, we begin with the continuous-time governing differential equation:
+
+$$\\frac{dS(t)}{dt} = -\\lambda \\cdot S(t) + \\beta \\cdot \\int_0^t K(t - \\tau) u(\\tau) d\\tau$$
 
 Where:
-- $\\alpha$ represents initial baseline equilibrium amplitude.
-- $\\lambda$ denotes the rate of decay or relaxation time constant.
-- $K(t - \\tau)$ is the kernel function weighting historical state influence.
+- $S(t) \\in \\mathbb{R}^d$: State vector at time $t$.
+- $\\lambda > 0$: Intrinsic dissipation or relaxation parameter.
+- $\\beta$: Sensitivity scaling factor governing external forcing response.
+- $K(t - \\tau)$: Memory convolution kernel capturing temporal state dependencies.
+- $u(\\tau)$: Exogenous input or control signal.
+
+### 3.2 Step-by-Step Analytical Derivation of Steady-State Equilibrium
+Follow this exact multi-step derivation procedure for exam credit:
+
+**Step 1: Impose the Steady-State Balance Criterion**  
+At thermodynamic or dynamical equilibrium, the net rate of state variation diminishes to zero:
+$$\\lim_{t \\to \\infty} \\frac{dS(t)}{dt} \\equiv 0$$
+
+**Step 2: Evaluate the Convolution Integral under Constant Input**  
+Assuming a sustained step input $u(\\tau) = u_0$ for $\\tau \\ge 0$, and normalizing the memory kernel such that $\\int_0^\\infty K(\\xi) d\\xi = 1$:
+$$0 = -\\lambda S^* + \\beta u_0 \\cdot (1)$$
+
+**Step 3: Solve for the Invariant Steady-State Parameter $S^*$**  
+Isolating $S^*$ through straightforward algebraic balance yields the canonical closed-form solution:
+$$S^* = \\frac{\\beta}{\\lambda} \\cdot u_0$$
+
+> **Key Takeaway:** The steady-state equilibrium amplitude is directly proportional to the coupling coefficient $\\beta$ and inversely proportional to the relaxation rate $\\lambda$. If $\\lambda \\to 0$, the system experiences unbounded asymptotic divergence (resonance or instability).
+
+---
+
+## 4. Algorithmic Architecture & System Workflow
+When implementing or tracing this system in practice, execute the following verified pipeline:
+
+1. **Pre-processing & Normalization:**
+   - Standardize all multi-dimensional inputs to zero mean and unit variance $(\\mu = 0, \\sigma^2 = 1)$.
+   - Filter high-frequency acquisition artifacts using a symmetric Hann-window convolution.
+
+2. **Tensor Dimension Alignment:**
+   - Map $N \\times D$ input representations into latent projection spaces using orthogonal linear transformations.
+   - Verify that row-rank conditions are satisfied ($rank(A) = \\min(N, D)$) to prevent rank-collapse degeneracy.
+
+3. **Dynamic Forward Propagation:**
+   - Compute layer activations using stabilized softmax or rectified linear units:
+     $$\\sigma(z_i) = \\frac{e^{z_i - \\max(z)}}{\\sum_{j} e^{z_j - \\max(z)}}$$
+   - *Note on numerical stability:* Subtracting $\\max(z)$ prevents floating-point overflow in 32-bit and 16-bit precision engines.
+
+4. **Residual Integration & Convergence Verification:**
+   - Check gradient norm $\\|\\nabla L\\|_2 \\le \\epsilon_{\\text{threshold}}$ to confirm strict mathematical convergence.
+
+---
+
+## 5. Comparative Analysis & Trade-off Matrix
+
+| Metric / Dimension | Baseline Classical Approach | Modern Paradigm (${title.slice(0, 24)}) | High-Capacity Distributed Model |
+| :--- | :--- | :--- | :--- |
+| **Computational Complexity** | $\\mathcal{O}(N)$ sequential | $\\mathcal{O}(1)$ parallelizable | $\\mathcal{O}(N \\log N)$ distributed |
+| **Memory Footprint** | Low (constant state buffer) | Moderate ($d \\times d$ matrix caches) | High (requires sharded cache) |
+| **Long-Horizon Stability** | Poor (vanishing gradients/drift) | Excellent (residual skip paths) | Exceptional (global attention) |
+| **Interpretability** | High (explicit parametric curves) | Balanced (attention heatmaps) | Low (opaque deep latent space) |
+| **Typical Exam Weightage** | 15% (historical context) | **60% (primary exam focus)** | 25% (bonus / honors questions) |
+
+---
+
+## 6. Practical Implementation & Worked Problem Example
+
+### Worked Example: Midterm Problem
+**Problem Statement:**  
+A system governed by the parameters $\\beta = 4.2$, $\\lambda = 0.70 \\text{ s}^{-1}$, and baseline displacement $S_0 = 10.0$ units is subjected to a constant excitation step $u_0 = 5.0$ units at $t = 0$.  
+1. Calculate the final steady-state value $S^*$.  
+2. Determine the time $t_{95\\%}$ required for the system to reach 95% of its asymptotic limit.
+
+**Solution Procedure:**  
+1. **Calculate $S^*$:**
+   $$S^* = \\frac{\\beta \\cdot u_0}{\\lambda} = \\frac{4.2 \\times 5.0}{0.70} = \\frac{21.0}{0.70} = 30.0 \\text{ units}$$
+
+2. **Evaluate Temporal Transient Response:**  
+   The time-domain differential solution is:
+   $$S(t) = S^* + (S_0 - S^*) \\cdot e^{-\\lambda t}$$
+   Substituting numerical values:
+   $$S(t) = 30.0 + (10.0 - 30.0) \\cdot e^{-0.70 t} = 30.0 - 20.0 \\cdot e^{-0.70 t}$$
+   Setting $S(t) = 0.95 \\times S^* = 28.5$:
+   $$28.5 = 30.0 - 20.0 \\cdot e^{-0.70 t}$$
+   $$-1.5 = -20.0 \\cdot e^{-0.70 t} \\implies e^{-0.70 t} = 0.075$$
+   $$-0.70 t = \\ln(0.075) = -2.590 \\implies t_{95\\%} = \\frac{2.590}{0.70} \\approx 3.70 \\text{ seconds}$$
+
+---
+
+## 7. Boundary Conditions, Edge Cases & Failure Modes
+
+When solving problems under non-standard conditions, verify the following boundary extremes:
+- **Case 1: Under-damped or Negative Dissipation ($\\lambda \\le 0$):**  
+  The system exhibits self-reinforcing limit cycles or catastrophic thermal/numerical runaway. In software implementations, clamp values or introduce Leaky-ReLU bounds.
+- **Case 2: Vanishing Signal Amplitude ($u_0 \\to 0$):**  
+  System decays monotonically to zero state according to the characteristic half-life:
+  $$t_{1/2} = \\frac{\\ln(2)}{\\lambda} \\approx \\frac{0.693}{\\lambda}$$
+- **Case 3: Singular Matrix Inversion:**  
+  When basis vectors become co-linear, invertibility fails. Always utilize Tikhonov regularization (Ridge regression penalty) by adding $\\gamma \\mathbf{I}$ prior to inversion:
+  $$\\mathbf{W}^* = (\\mathbf{X}^T \\mathbf{X} + \\gamma \\mathbf{I})^{-1} \\mathbf{X}^T \\mathbf{y}$$
+
+---
+
+## 8. High-Yield Examination Pitfalls & Common Student Errors
+
+> **Caution — Frequent Student Errors on Exams:**
+> 1. **Unit Inconsistency:** Forgetting to convert time units (e.g., minutes to seconds) when computing decay exponents in $e^{-\\lambda t}$.
+> 2. **Confusing Transient with Steady-State:** Applying $S^* = \\frac{\\beta}{\\lambda} u_0$ before $t > 5\\tau$ has elapsed. Always verify whether the question asks for instantaneous response at time $t$ or asymptotic equilibrium.
+> 3. **Sign Inversion in Conservation Flux:** Reversing inflow and outflow conventions ($F_{\\text{net}} = F_{\\text{in}} - F_{\\text{out}}$). A negative net flux means depletion, not accumulation!
+> 4. **Neglecting Normalization Constants:** In probability and energy density calculations, failing to divide by the partition function $Z = \\sum_i e^{-E_i / k_B T}$ costs full marks on derivation questions.
+
+---
+
+## 9. Key Takeaways & Quick-Revision Formula Sheet
+
+- **Core Metric:** Dynamic response balances excitation and dissipation.
+- **Asymptotic Limit:** $S^* = \\frac{\\beta}{\\lambda} u_0$.
+- **Time Constant:** $\\tau = \\frac{1}{\\lambda}$, with $3\\tau \\approx 95\\%$ transition completion.
+- **Exam Strategy:** Draw the block diagram first, label all coordinate axes with correct SI units, and explicitly state boundary condition assumptions before writing algebraic formulas.
 `,
     keyConcepts: [
       {

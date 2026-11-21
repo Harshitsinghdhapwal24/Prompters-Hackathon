@@ -14,10 +14,11 @@ import StatCards from '@/components/dashboard/StatCards';
 import QuickActions from '@/components/dashboard/QuickActions';
 import RecentLectures from '@/components/dashboard/RecentLectures';
 import { getStoredLectures } from '@/lib/storage';
+import { DEMO_LECTURES } from '@/data/demoLectures';
 import { Lecture } from '@/types/lecture';
 
 export default function DashboardPage() {
-  const [lectures, setLectures] = useState<Lecture[]>([]);
+  const [lectures, setLectures] = useState<Lecture[]>(DEMO_LECTURES);
 
   useEffect(() => {
     const loadData = () => {
