@@ -12,42 +12,42 @@ export default function SummaryTab({ lecture }: SummaryTabProps) {
   const { summary } = lecture;
 
   return (
-    <div className="space-y-6">
-      {/* TL;DR Highlight Card */}
-      <div className="p-6 rounded-3xl bg-gradient-to-br from-purple-500/10 via-indigo-500/5 to-blue-500/10 border border-purple-200/80 dark:border-purple-900/60 shadow-sm relative overflow-hidden">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="p-1.5 rounded-lg bg-purple-600 text-white">
-            <Sparkles className="w-4 h-4" />
+    <div className="space-y-5">
+      {/* Executive Briefing Card */}
+      <div className="p-6 rounded-2xl bg-white dark:bg-[#0e1422] border border-slate-200/80 dark:border-slate-800/80 shadow-subtle relative overflow-hidden">
+        <div className="flex items-center gap-2 mb-2.5">
+          <div className="p-1 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+            <Sparkles className="w-3.5 h-3.5" />
           </div>
-          <h3 className="text-sm font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
-            Executive Summary (TL;DR)
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+            Executive Summary
           </h3>
         </div>
-        <p className="text-sm sm:text-base text-slate-800 dark:text-slate-100 font-medium leading-relaxed">
+        <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-100 font-medium leading-relaxed">
           {summary.tldr}
         </p>
       </div>
 
-      {/* Key Takeaways Grid */}
+      {/* Key Takeaways */}
       {summary.keyTakeaways && summary.keyTakeaways.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           <div className="flex items-center gap-2">
-            <Lightbulb className="w-4 h-4 text-amber-500" />
-            <h4 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              Critical Key Takeaways
+            <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Core Takeaways
             </h4>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
             {summary.keyTakeaways.map((item, idx) => (
               <div
                 key={idx}
-                className="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800/80 flex items-start gap-3 shadow-sm hover:border-purple-300 dark:hover:border-purple-800/60 transition-colors"
+                className="p-3.5 rounded-xl bg-white dark:bg-[#0e1422] border border-slate-200/80 dark:border-slate-800/80 flex items-start gap-2.5 shadow-subtle hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
               >
-                <div className="p-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0">
-                  <CheckCircle2 className="w-4 h-4" />
+                <div className="p-0.5 rounded-full text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
                 </div>
-                <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
                   {item}
                 </p>
               </div>
@@ -56,13 +56,13 @@ export default function SummaryTab({ lecture }: SummaryTabProps) {
         </div>
       )}
 
-      {/* Detailed Lecture Narrative */}
+      {/* Detailed Narrative */}
       {summary.detailedSummary && (
-        <div className="p-6 rounded-3xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800/80 space-y-3">
+        <div className="p-6 rounded-2xl bg-white dark:bg-[#0e1422] border border-slate-200/80 dark:border-slate-800/80 shadow-subtle space-y-2.5">
           <div className="flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-            <h4 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              Detailed Lecture Synthesis
+            <BookOpen className="w-3.5 h-3.5 text-slate-400" />
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Detailed Synthesis
             </h4>
           </div>
           <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line">

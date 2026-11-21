@@ -7,9 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Shuffle,
-  Sparkles,
   Layers,
-  HelpCircle,
 } from 'lucide-react';
 import { Flashcard, Lecture } from '@/types/lecture';
 import { updateLecture } from '@/lib/storage';
@@ -28,10 +26,8 @@ export default function FlashcardsViewer({ lecture, onUpdateLecture }: Flashcard
     setCards(lecture.flashcards || []);
   }, [lecture]);
 
-  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if user is typing in an input
       if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return;
 
       if (e.code === 'Space') {
@@ -85,9 +81,9 @@ export default function FlashcardsViewer({ lecture, onUpdateLecture }: Flashcard
 
   if (!cards || cards.length === 0) {
     return (
-      <div className="p-12 text-center rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
-        <Layers className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-        <h4 className="text-base font-semibold text-slate-800 dark:text-slate-200">
+      <div className="p-8 text-center rounded-xl bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800">
+        <Layers className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-2.5" />
+        <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
           No Flashcards Generated
         </h4>
         <p className="text-xs text-slate-400 mt-1">
@@ -102,41 +98,40 @@ export default function FlashcardsViewer({ lecture, onUpdateLecture }: Flashcard
   const progressPercent = Math.round((masteredCount / cards.length) * 100);
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-xl mx-auto space-y-5">
       {/* Top Controls & Progress Bar */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs font-semibold">
+        <div className="flex items-center justify-between text-xs font-medium">
           <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-            <span className="px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/50">
-              Card {currentIndex + 1} of {cards.length}
+            <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono text-[11px]">
+              Card {currentIndex + 1}/{cards.length}
             </span>
             <span>
               {masteredCount} of {cards.length} Mastered ({progressPercent}%)
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               onClick={handleShuffle}
-              className="p-1.5 rounded-lg text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               title="Shuffle Cards"
             >
-              <Shuffle className="w-4 h-4" />
+              <Shuffle className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={handleResetProgress}
-              className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              title="Reset Mastery"
+              className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              title="Reset Progress"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+        <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-purple-600 to-emerald-500 transition-all duration-300"
+            className="h-full bg-indigo-600 dark:bg-indigo-500 transition-all duration-300"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -144,95 +139,94 @@ export default function FlashcardsViewer({ lecture, onUpdateLecture }: Flashcard
 
       {/* 3D Flipping Card Container */}
       <div
-        className="perspective-1000 cursor-pointer min-h-[320px] sm:min-h-[360px]"
+        className="perspective-1000 cursor-pointer min-h-[300px] sm:min-h-[340px]"
         onClick={() => setIsFlipped(!isFlipped)}
       >
         <div
-          className={`relative w-full min-h-[320px] sm:min-h-[360px] rounded-3xl transition-transform duration-500 transform-style-3d shadow-md hover:shadow-xl ${
+          className={`relative w-full min-h-[300px] sm:min-h-[340px] rounded-2xl transition-transform duration-500 transform-style-3d shadow-subtle hover:shadow-elevated ${
             isFlipped ? 'rotate-y-180' : ''
           }`}
         >
-          {/* FRONT OF CARD (Question) */}
-          <div className="absolute inset-0 w-full h-full p-8 rounded-3xl bg-white dark:bg-[#111827] border-2 border-purple-200/80 dark:border-purple-900/60 backface-hidden flex flex-col justify-between">
+          {/* FRONT (Question) */}
+          <div className="absolute inset-0 w-full h-full p-7 rounded-2xl bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 backface-hidden flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200/70 dark:border-purple-800/50">
+              <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
                 {currentCard.category}
               </span>
-              <span className="text-[11px] font-semibold text-slate-400">Question</span>
+              <span className="text-[11px] font-medium text-slate-400">Prompt</span>
             </div>
 
-            <div className="my-auto py-4 text-center">
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-relaxed">
+            <div className="my-auto py-3 text-center">
+              <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white leading-relaxed">
                 {currentCard.front}
               </h3>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800/60 text-xs text-slate-400">
-              <span>Click or Press [Space] to flip</span>
-              <span className="capitalize text-[11px] px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800/80 text-[11px] text-slate-400">
+              <span>Click or [Space] to reveal answer</span>
+              <span className="capitalize px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
                 {currentCard.difficulty}
               </span>
             </div>
           </div>
 
-          {/* BACK OF CARD (Answer) */}
-          <div className="absolute inset-0 w-full h-full p-8 rounded-3xl bg-gradient-to-br from-purple-900/90 via-indigo-950 to-slate-950 text-white border-2 border-purple-500/80 backface-hidden rotate-y-180 flex flex-col justify-between shadow-2xl">
+          {/* BACK (Answer) */}
+          <div className="absolute inset-0 w-full h-full p-7 rounded-2xl bg-slate-900 text-white border border-slate-750 backface-hidden rotate-y-180 flex flex-col justify-between shadow-xl">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-200 border border-purple-400/40">
-                Answer & Key Insight
+              <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                Key Answer
               </span>
-              <Sparkles className="w-4 h-4 text-purple-300" />
+              <span className="text-[11px] font-medium text-slate-400">Solution</span>
             </div>
 
-            <div className="my-auto py-4">
-              <p className="text-base sm:text-lg text-purple-50 leading-relaxed font-medium">
+            <div className="my-auto py-3">
+              <p className="text-sm sm:text-base text-slate-100 leading-relaxed font-normal">
                 {currentCard.back}
               </p>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-purple-800/50 text-xs text-purple-200">
-              <span>Click or Press [Space] to flip back</span>
-              <span className="font-mono text-[11px]">LectureLens AI</span>
+            <div className="flex items-center justify-between pt-3 border-t border-slate-800 text-[11px] text-slate-400">
+              <span>Click or [Space] to flip back</span>
+              <span className="font-mono text-[10px]">LectureLens</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Navigation & Action Bar */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-3">
         <button
           onClick={handlePrev}
-          className="p-3 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm transition-all hover:scale-105"
-          title="Previous Card (Left Arrow)"
+          className="p-2.5 rounded-xl bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-subtle transition-all"
+          title="Previous (Left Arrow)"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-4 h-4" />
         </button>
 
         <button
           onClick={() => toggleMastered(currentCard.id)}
-          className={`flex-1 py-3 px-6 rounded-2xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all ${
+          className={`flex-1 py-2 px-4 rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 transition-all ${
             currentCard.mastered
-              ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20'
-              : 'bg-white dark:bg-[#111827] hover:bg-purple-50 dark:hover:bg-purple-950/40 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800'
+              ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-subtle'
+              : 'bg-white dark:bg-[#0e1422] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 shadow-subtle'
           }`}
         >
           <CheckCircle2
-            className={`w-4 h-4 ${currentCard.mastered ? 'text-white' : 'text-slate-400'}`}
+            className={`w-3.5 h-3.5 ${currentCard.mastered ? 'text-white' : 'text-slate-400'}`}
           />
-          {currentCard.mastered ? 'Mastered! Click to unmark' : 'Mark as Mastered'}
+          {currentCard.mastered ? 'Mastered' : 'Mark Mastered'}
         </button>
 
         <button
           onClick={handleNext}
-          className="p-3 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-sm transition-all hover:scale-105"
-          title="Next Card (Right Arrow)"
+          className="p-2.5 rounded-xl bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-subtle transition-all"
+          title="Next (Right Arrow)"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-4 h-4" />
         </button>
       </div>
 
-      {/* Keyboard Shortcuts Hint */}
-      <div className="text-center text-[11px] text-slate-400 dark:text-slate-500 space-x-3">
+      <div className="text-center text-[11px] text-slate-400 space-x-2">
         <span>[Space] Flip</span>
         <span>•</span>
         <span>[←] Previous</span>

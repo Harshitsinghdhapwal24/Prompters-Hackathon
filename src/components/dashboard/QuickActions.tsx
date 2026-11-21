@@ -2,71 +2,72 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { UploadCloud, Layers, HelpCircle, Sparkles, ArrowRight, FileCheck } from 'lucide-react';
+import { UploadCloud, Layers, HelpCircle, ArrowRight } from 'lucide-react';
 
 export default function QuickActions() {
   const actions = [
     {
-      title: 'Upload New Lecture',
-      desc: 'Process audio (MP3/WAV), video (MP4), PDF or paste lecture transcripts.',
+      title: 'Upload Lecture',
+      desc: 'Process audio (MP3/WAV), video (MP4), PDF or paste transcripts directly.',
       href: '/upload',
       icon: UploadCloud,
       cta: 'Start Uploading',
-      gradient: 'from-purple-600 via-indigo-600 to-blue-600',
-      badge: 'Multimodal AI',
+      iconColor: 'text-indigo-600 dark:text-indigo-400',
+      iconBg: 'bg-indigo-50 dark:bg-indigo-950/60',
+      badge: 'Multimodal',
     },
     {
-      title: 'Master Flashcard Decks',
-      desc: 'Review 3D interactive flashcards with memory spaced repetition.',
+      title: 'Review Flashcards',
+      desc: 'Train memory with 3D interactive flashcards and active recall tracking.',
       href: '/flashcards',
       icon: Layers,
-      cta: 'Review Cards',
-      gradient: 'from-indigo-600 to-purple-700',
+      cta: 'Review Deck',
+      iconColor: 'text-blue-600 dark:text-blue-400',
+      iconBg: 'bg-blue-50 dark:bg-blue-950/60',
       badge: 'Active Recall',
     },
     {
-      title: 'Exam Practice Quiz',
-      desc: 'Challenge yourself with high-yield multiple-choice exam questions.',
+      title: 'Practice Exam Quiz',
+      desc: 'Challenge yourself with high-yield multiple-choice questions & explanations.',
       href: '/quiz',
       icon: HelpCircle,
       cta: 'Take Quiz',
-      gradient: 'from-blue-600 to-cyan-600',
-      badge: 'Instant Feedback',
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
+      iconBg: 'bg-emerald-50 dark:bg-emerald-950/60',
+      badge: 'Instant Scoring',
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
       {actions.map((act, i) => {
         const Icon = act.icon;
         return (
           <Link
             key={i}
             href={act.href}
-            className="p-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800/80 shadow-sm hover:shadow-lg hover:border-purple-300 dark:hover:border-purple-800/60 transition-all duration-200 flex flex-col justify-between group"
+            className="p-5 rounded-xl bg-white dark:bg-[#0e1422] border border-slate-200/80 dark:border-slate-800/80 shadow-subtle hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-md transition-all duration-150 flex flex-col justify-between group"
           >
             <div>
               <div className="flex items-center justify-between mb-3">
-                <div
-                  className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${act.gradient} flex items-center justify-center text-white shadow-md shadow-purple-500/20 group-hover:scale-110 transition-transform`}
-                >
-                  <Icon className="w-5 h-5" />
+                <div className={`w-9 h-9 rounded-lg ${act.iconBg} ${act.iconColor} flex items-center justify-center transition-transform group-hover:scale-105`}>
+                  <Icon className="w-4 h-4" />
                 </div>
-                <span className="text-[10px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-800/50">
+                <span className="text-[10px] font-medium tracking-wide uppercase px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200/60 dark:border-slate-700/60">
                   {act.badge}
                 </span>
               </div>
-              <h3 className="font-semibold text-slate-900 dark:text-white text-base group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+              <h3 className="font-semibold text-slate-900 dark:text-white text-sm group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                 {act.title}
               </h3>
-              <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                 {act.desc}
               </p>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/50 flex items-center justify-between text-xs font-semibold text-purple-600 dark:text-purple-400 group-hover:translate-x-0.5 transition-transform">
+            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
               <span>{act.cta}</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </div>
           </Link>
         );

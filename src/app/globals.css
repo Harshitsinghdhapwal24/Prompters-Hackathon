@@ -8,41 +8,44 @@
   --card: #ffffff;
   --card-foreground: #0f172a;
   --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
   --muted: #64748b;
-  --primary-glow: rgba(124, 58, 237, 0.12);
+  --primary-glow: rgba(79, 70, 229, 0.08);
 }
 
 .dark {
   --background: #090d16;
-  --foreground: #f8fafc;
-  --card: #111827;
+  --foreground: #f1f5f9;
+  --card: #0e1422;
   --card-foreground: #f8fafc;
-  --border: #1f293d;
-  --muted: #94a3b8;
-  --primary-glow: rgba(139, 92, 246, 0.18);
+  --border: #1b2436;
+  --border-subtle: #141b2b;
+  --muted: #8e9bb0;
+  --primary-glow: rgba(99, 102, 241, 0.12);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-sans, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
   min-height: 100vh;
+  letter-spacing: -0.011em;
 }
 
-/* Custom modern scrollbars */
+/* Custom sleek scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(150, 150, 160, 0.25);
+  background: rgba(140, 150, 170, 0.2);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(150, 150, 160, 0.45);
+  background: rgba(140, 150, 170, 0.35);
 }
 
 /* 3D Flip Card Styles */
@@ -65,28 +68,33 @@ body {
 
 /* Glassmorphism helpers */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.85);
 }
 
 .dark .glass-panel {
-  background: rgba(17, 24, 39, 0.75);
+  background: rgba(14, 20, 34, 0.82);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(31, 41, 61, 0.75);
+  border: 1px solid rgba(27, 36, 54, 0.85);
 }
 
 /* Subtle gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #7c3aed 0%, #3b82f6 50%, #06b6d4 100%);
+  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .dark .gradient-text {
-  background: linear-gradient(135deg, #a78bfa 0%, #60a5fa 50%, #22d3ee 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #93c5fd 60%, #818cf8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Precision hairline borders */
+.border-subtle {
+  border-color: var(--border);
 }

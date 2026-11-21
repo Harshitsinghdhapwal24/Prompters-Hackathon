@@ -3,18 +3,17 @@
 import React from 'react';
 import Link from 'next/link';
 import {
-  BookOpen,
   FileText,
   Layers,
   HelpCircle,
   Download,
   Trash2,
   Clock,
-  Sparkles,
   Volume2,
   Video,
   FileCode,
   ArrowRight,
+  BookOpen,
 } from 'lucide-react';
 import { Lecture, SourceType } from '@/types/lecture';
 import { exportLectureToPdf } from '@/lib/pdfGenerator';
@@ -29,11 +28,11 @@ export default function RecentLectures({ lectures, onLectureDeleted }: RecentLec
   const getSourceIcon = (type: SourceType) => {
     switch (type) {
       case 'audio':
-        return <Volume2 className="w-3.5 h-3.5 text-purple-500" />;
+        return <Volume2 className="w-3.5 h-3.5 text-indigo-500" />;
       case 'video':
         return <Video className="w-3.5 h-3.5 text-blue-500" />;
       case 'pdf':
-        return <FileText className="w-3.5 h-3.5 text-red-500" />;
+        return <FileText className="w-3.5 h-3.5 text-rose-500" />;
       default:
         return <FileCode className="w-3.5 h-3.5 text-emerald-500" />;
     }
@@ -56,20 +55,18 @@ export default function RecentLectures({ lectures, onLectureDeleted }: RecentLec
 
   if (!lectures || lectures.length === 0) {
     return (
-      <div className="p-8 text-center rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
-        <BookOpen className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-        <h4 className="text-base font-semibold text-slate-800 dark:text-slate-200">
+      <div className="p-8 text-center rounded-xl bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800">
+        <BookOpen className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-2.5" />
+        <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
           No lectures processed yet
         </h4>
         <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 mb-4">
-          Upload your first classroom audio, video, PDF or paste a lecture transcript to generate
-          study materials in seconds.
+          Upload classroom audio, video, PDF or paste a lecture transcript to generate your first study package.
         </p>
         <Link
           href="/upload"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-purple-600 hover:bg-purple-500 text-white shadow-sm"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-subtle transition-colors"
         >
-          <Sparkles className="w-3.5 h-3.5" />
           Upload Lecture Now
         </Link>
       </div>
@@ -77,7 +74,7 @@ export default function RecentLectures({ lectures, onLectureDeleted }: RecentLec
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2.5">
       {lectures.map((lec) => {
         const masteredCards = lec.flashcards?.filter((f) => f.mastered).length || 0;
         const totalCards = lec.flashcards?.length || 0;
@@ -85,12 +82,12 @@ export default function RecentLectures({ lectures, onLectureDeleted }: RecentLec
         return (
           <div
             key={lec.id}
-            className="p-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800/80 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+            className="p-4 rounded-xl bg-white dark:bg-[#0e1422] border border-slate-200/80 dark:border-slate-800/80 shadow-subtle hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-150 flex flex-col md:flex-row md:items-center justify-between gap-3 group"
           >
             {/* Left: Metadata & Title */}
             <div className="flex-1 min-w-0">
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200/70 dark:border-purple-800/50">
+              <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-750">
                   {getSourceIcon(lec.sourceType)}
                   {lec.subject}
                 </span>
@@ -107,31 +104,31 @@ export default function RecentLectures({ lectures, onLectureDeleted }: RecentLec
 
               <Link
                 href={`/lectures/${lec.id}`}
-                className="block group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors"
+                className="block group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
               >
-                <h4 className="text-base font-semibold text-slate-900 dark:text-white truncate">
+                <h4 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white truncate">
                   {lec.title}
                 </h4>
               </Link>
 
-              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 line-clamp-1 max-w-2xl">
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400 line-clamp-1 max-w-2xl">
                 {lec.summary?.tldr || 'Complete study notes and examination guide.'}
               </p>
             </div>
 
-            {/* Right: Action Badges & Buttons */}
+            {/* Right: Actions */}
             <div className="flex flex-wrap items-center gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100 dark:border-slate-800">
               <Link
                 href={`/lectures/${lec.id}`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/40 dark:hover:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200/70 dark:border-purple-800/50 transition-colors"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 transition-colors"
               >
-                <FileText className="w-3.5 h-3.5" />
+                <FileText className="w-3.5 h-3.5 text-slate-400" />
                 Notes
               </Link>
 
               <Link
                 href={`/lectures/${lec.id}?tab=flashcards`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/60 dark:hover:bg-slate-700/60 text-slate-700 dark:text-slate-300 transition-colors"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 transition-colors"
               >
                 <Layers className="w-3.5 h-3.5 text-indigo-500" />
                 Cards ({masteredCards}/{totalCards})
@@ -139,7 +136,7 @@ export default function RecentLectures({ lectures, onLectureDeleted }: RecentLec
 
               <Link
                 href={`/lectures/${lec.id}?tab=quiz`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/60 dark:hover:bg-slate-700/60 text-slate-700 dark:text-slate-300 transition-colors"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 transition-colors"
               >
                 <HelpCircle className="w-3.5 h-3.5 text-emerald-500" />
                 Quiz ({lec.quiz?.length || 0})
@@ -148,7 +145,7 @@ export default function RecentLectures({ lectures, onLectureDeleted }: RecentLec
               <button
                 onClick={(e) => handlePdfExport(e, lec)}
                 title="Download PDF Study Guide"
-                className="p-2 rounded-xl text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 <Download className="w-4 h-4" />
               </button>
@@ -156,14 +153,14 @@ export default function RecentLectures({ lectures, onLectureDeleted }: RecentLec
               <button
                 onClick={(e) => handleDelete(e, lec.id, lec.title)}
                 title="Delete Lecture"
-                className="p-2 rounded-xl text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
 
               <Link
                 href={`/lectures/${lec.id}`}
-                className="p-2 rounded-xl text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 <ArrowRight className="w-4 h-4" />
               </Link>

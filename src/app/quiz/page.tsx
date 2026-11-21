@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { HelpCircle, Sparkles, ArrowRight, Award } from 'lucide-react';
+import { Award, ArrowRight } from 'lucide-react';
 import { getStoredLectures } from '@/lib/storage';
 import { Lecture } from '@/types/lecture';
 import PracticeQuiz from '@/components/study/PracticeQuiz';
@@ -24,27 +24,25 @@ export default function QuizHubPage() {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-16">
-      {/* Header */}
       <div>
-        <div className="flex items-center gap-2 mb-1">
-          <span className="p-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-            <Award className="w-4 h-4" />
+        <div className="flex items-center gap-1.5 mb-1">
+          <span className="p-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+            <Award className="w-3.5 h-3.5" />
           </span>
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-            Examination Practice
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            Assessment
           </span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
           Exam Practice Quiz Hub
         </h1>
-        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-          {totalQuestions} high-yield multiple-choice questions ready to test your exam readiness.
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          {totalQuestions} high-yield multiple-choice questions ready to test your exam preparation.
         </p>
       </div>
 
-      {/* Quiz Deck Selector Pills */}
       {lectures.length > 0 && (
-        <div className="flex items-center gap-2 p-1.5 bg-white dark:bg-[#111827] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 overflow-x-auto scrollbar-none shadow-sm">
+        <div className="flex items-center gap-1.5 p-1 bg-white dark:bg-[#0e1422] rounded-xl border border-slate-200/80 dark:border-slate-800/80 overflow-x-auto scrollbar-none shadow-subtle">
           {lectures.map((lec) => {
             const isSelected = lec.id === selectedLecture?.id;
 
@@ -52,10 +50,10 @@ export default function QuizHubPage() {
               <button
                 key={lec.id}
                 onClick={() => setSelectedId(lec.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2 ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all flex items-center gap-2 ${
                   isSelected
-                    ? 'bg-purple-600 text-white shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900'
+                    ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-subtle'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                 }`}
               >
                 <span>{lec.subject}</span>
@@ -72,21 +70,20 @@ export default function QuizHubPage() {
         </div>
       )}
 
-      {/* Selected Lecture Quiz */}
       {selectedLecture ? (
         <div className="space-y-4">
-          <div className="p-4 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+          <div className="p-4 rounded-xl bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 shadow-subtle flex items-center justify-between">
             <div>
-              <span className="text-[11px] font-bold text-purple-600 dark:text-purple-400 uppercase">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                 Topic: {selectedLecture.subject}
               </span>
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+              <h3 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                 {selectedLecture.title}
               </h3>
             </div>
             <Link
               href={`/lectures/${selectedLecture.id}`}
-              className="text-xs font-semibold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
             >
               Full Study Guide <ArrowRight className="w-3.5 h-3.5" />
             </Link>
@@ -95,8 +92,8 @@ export default function QuizHubPage() {
           <PracticeQuiz quiz={selectedLecture.quiz || []} />
         </div>
       ) : (
-        <div className="p-12 text-center bg-white dark:bg-[#111827] rounded-3xl border border-slate-200 dark:border-slate-800">
-          <p className="text-sm text-slate-500">No practice quiz questions available.</p>
+        <div className="p-8 text-center bg-white dark:bg-[#0e1422] rounded-xl border border-slate-200 dark:border-slate-800 text-xs text-slate-400">
+          No practice quiz questions available.
         </div>
       )}
     </div>
