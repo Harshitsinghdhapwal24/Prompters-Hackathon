@@ -11,7 +11,10 @@ import {
   AlertCircle,
   Loader2,
   FileUp,
+  CheckCircle2,
+  Play,
 } from 'lucide-react';
+import { YoutubeIcon } from '@/components/icons/YoutubeIcon';
 import { getStoredSettings, saveLecture } from '@/lib/storage';
 import { SourceType } from '@/types/lecture';
 
@@ -19,12 +22,26 @@ export default function LectureUploadZone() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [activeTab, setActiveTab] = useState<'upload' | 'text'>('upload');
+  const [activeTab, setActiveTab] = useState<'youtube' | 'upload' | 'text'>('youtube');
   const [dragOver, setDragOver] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [lectureTitle, setLectureTitle] = useState('');
   const [subject, setSubject] = useState('');
   const [transcriptText, setTranscriptText] = useState('');
+
+  // YouTube state
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [loadingPreview, setLoadingPreview] = useState(false);
+  const [youtubePreview, setYoutubePreview] = useState<{
+    videoId: string;
+    url: string;
+    title: string;
+    author: string;
+    thumbnailUrl: string;
+    hasTranscript: boolean;
+    transcriptCount: number;
+    excerpt?: string;
+  } | null>(null);
 
   // Generation status
   const [isProcessing, setIsProcessing] = useState(false);
@@ -32,14 +49,46 @@ export default function LectureUploadZone() {
   const [errorMessage, setErrorMessage] = useState('');
 
   const steps = [
-    'Validating input lecture source...',
-    'Analyzing audio / video transcript semantics with Gemini AI...',
+    activeTab === 'youtube'
+      ? 'Fetching YouTube metadata & timed captions...'
+      : 'Validating lecture source...',
+    'Analyzing lecture transcript semantics with Gemini AI...',
     'Extracting high-yield concepts, definitions & equations...',
     'Synthesizing 3D flashcards & exam practice quiz questions...',
     'Finalizing comprehensive study package & notes...',
   ];
 
   const allowedExtensions = ['mp3', 'wav', 'm4a', 'mp4', 'webm', 'pdf', 'txt', 'md'];
+
+  const handleFetchYouTubePreview = async (urlToFetch: string) => {
+    if (!urlToFetch || urlToFetch.length < 10) return;
+    setLoadingPreview(true);
+    setErrorMessage('');
+
+    try {
+      const res = await fetch('/api/youtube-preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: urlToFetch }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setYoutubePreview(data.data);
+        if (!lectureTitle) {
+          setLectureTitle(data.data.title);
+        }
+      } else {
+        setYoutubePreview(null);
+        setErrorMessage(data.error || 'Could not fetch video preview from YouTube.');
+      }
+    } catch (err: any) {
+      console.warn('Preview error:', err);
+      setYoutubePreview(null);
+    } finally {
+      setLoadingPreview(false);
+    }
+  };
 
   const handleFileDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -85,6 +134,11 @@ export default function LectureUploadZone() {
     e.preventDefault();
     setErrorMessage('');
 
+    if (activeTab === 'youtube' && !youtubeUrl.trim()) {
+      setErrorMessage('Please enter a YouTube video URL.');
+      return;
+    }
+
     if (activeTab === 'upload' && !selectedFile) {
       setErrorMessage('Please select an audio, video, or document file to proceed.');
       return;
@@ -109,7 +163,22 @@ export default function LectureUploadZone() {
 
       let response: Response;
 
-      if (activeTab === 'upload' && selectedFile) {
+      if (activeTab === 'youtube') {
+        response = await fetch('/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-gemini-api-key': apiKey,
+            'x-gemini-model': model,
+          },
+          body: JSON.stringify({
+            youtubeUrl: youtubeUrl.trim(),
+            title: lectureTitle || youtubePreview?.title || '',
+            subject: subject || 'General Studies',
+            sourceType: 'youtube',
+          }),
+        });
+      } else if (activeTab === 'upload' && selectedFile) {
         const formData = new FormData();
         formData.append('file', selectedFile);
         formData.append('title', lectureTitle || selectedFile.name);
@@ -169,27 +238,41 @@ export default function LectureUploadZone() {
       <div className="flex p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
         <button
           type="button"
+          onClick={() => setActiveTab('youtube')}
+          className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+            activeTab === 'youtube'
+              ? 'bg-white dark:bg-[#0e1422] text-slate-900 dark:text-white shadow-subtle border border-slate-200/60 dark:border-slate-700/60'
+              : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
+          }`}
+        >
+          <YoutubeIcon className="w-3.5 h-3.5 text-rose-500" />
+          YouTube Video
+        </button>
+
+        <button
+          type="button"
           onClick={() => setActiveTab('upload')}
-          className={`flex-1 py-2 px-3.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
+          className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'upload'
               ? 'bg-white dark:bg-[#0e1422] text-slate-900 dark:text-white shadow-subtle border border-slate-200/60 dark:border-slate-700/60'
               : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
           }`}
         >
           <UploadCloud className="w-3.5 h-3.5" />
-          Upload File (Audio/Video/Doc)
+          Audio / Video File
         </button>
+
         <button
           type="button"
           onClick={() => setActiveTab('text')}
-          className={`flex-1 py-2 px-3.5 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 ${
+          className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
             activeTab === 'text'
               ? 'bg-white dark:bg-[#0e1422] text-slate-900 dark:text-white shadow-subtle border border-slate-200/60 dark:border-slate-700/60'
               : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
           }`}
         >
           <FileText className="w-3.5 h-3.5" />
-          Paste Transcript / Notes
+          Paste Transcript
         </button>
       </div>
 
@@ -226,7 +309,120 @@ export default function LectureUploadZone() {
           </div>
         </div>
 
-        {/* Tab 1: Upload File */}
+        {/* Tab 1: YouTube Video Link */}
+        {activeTab === 'youtube' && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+                YouTube Video Link
+              </label>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <YoutubeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rose-500" />
+                  <input
+                    type="url"
+                    value={youtubeUrl}
+                    onChange={(e) => {
+                      setYoutubeUrl(e.target.value);
+                      if (e.target.value.includes('youtu')) {
+                        handleFetchYouTubePreview(e.target.value);
+                      }
+                    }}
+                    placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+                    disabled={isProcessing}
+                    className="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 font-mono"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleFetchYouTubePreview(youtubeUrl)}
+                  disabled={loadingPreview || !youtubeUrl}
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-50"
+                >
+                  {loadingPreview ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Fetch Info'}
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Demo YouTube Videos */}
+            <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-400">
+              <span>Try sample:</span>
+              <button
+                type="button"
+                onClick={() => {
+                  const url = 'https://www.youtube.com/watch?v=aircAruvnKk';
+                  setYoutubeUrl(url);
+                  setSubject('Computer Science');
+                  handleFetchYouTubePreview(url);
+                }}
+                className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:underline"
+              >
+                3Blue1Brown Neural Networks
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const url = 'https://www.youtube.com/watch?v=OQ5jsbhAv_M';
+                  setYoutubeUrl(url);
+                  setSubject('Algorithms & Math');
+                  handleFetchYouTubePreview(url);
+                }}
+                className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:underline"
+              >
+                MIT Dynamic Programming
+              </button>
+            </div>
+
+            {/* YouTube Live Preview Card */}
+            {youtubePreview && (
+              <div className="p-3.5 rounded-xl bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 shadow-subtle flex flex-col sm:flex-row gap-3 items-start sm:items-center animate-fade-in">
+                <div className="relative w-full sm:w-36 h-24 rounded-lg overflow-hidden bg-slate-900 flex-shrink-0 border border-slate-800">
+                  <img
+                    src={youtubePreview.thumbnailUrl}
+                    alt={youtubePreview.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-md">
+                      <Play className="w-3.5 h-3.5 ml-0.5 fill-current" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-semibold uppercase px-1.5 py-0.2 rounded bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/40">
+                      YouTube Lecture
+                    </span>
+                    <span className="text-[11px] text-slate-400 truncate">
+                      {youtubePreview.author}
+                    </span>
+                  </div>
+
+                  <h4 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white line-clamp-2">
+                    {youtubePreview.title}
+                  </h4>
+
+                  <div className="flex items-center gap-2 pt-0.5 text-[11px]">
+                    {youtubePreview.hasTranscript ? (
+                      <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                        <CheckCircle2 className="w-3 h-3" />
+                        Captions Available ({youtubePreview.transcriptCount} lines)
+                      </span>
+                    ) : (
+                      <span className="text-slate-400">
+                        Auto-caption generation will be applied
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab 2: Upload File */}
         {activeTab === 'upload' && (
           <div>
             {!selectedFile ? (
@@ -314,7 +510,7 @@ export default function LectureUploadZone() {
           </div>
         )}
 
-        {/* Tab 2: Transcript Input */}
+        {/* Tab 3: Transcript Input */}
         {activeTab === 'text' && (
           <div>
             <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
@@ -362,7 +558,7 @@ export default function LectureUploadZone() {
               <div className="flex items-center gap-2.5">
                 <Loader2 className="w-4 h-4 text-indigo-500 animate-spin" />
                 <span className="text-xs font-semibold text-slate-900 dark:text-white">
-                  Gemini Multimodal Processing
+                  {activeTab === 'youtube' ? 'Processing YouTube Video' : 'Gemini Multimodal Processing'}
                 </span>
               </div>
               <span className="text-[11px] font-mono text-slate-400">
@@ -393,6 +589,11 @@ export default function LectureUploadZone() {
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
               Generating Study Materials...
+            </>
+          ) : activeTab === 'youtube' ? (
+            <>
+              <YoutubeIcon className="w-4 h-4 text-white" />
+              Process YouTube Video & Generate Notes
             </>
           ) : (
             'Generate Study Materials'

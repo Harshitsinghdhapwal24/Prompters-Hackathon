@@ -17,10 +17,14 @@ import {
   HelpCircle,
   Award,
   FileCode,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
+import { YoutubeIcon } from '@/components/icons/YoutubeIcon';
 import { Lecture } from '@/types/lecture';
 import { exportLectureToPdf } from '@/lib/pdfGenerator';
 import { deleteLecture } from '@/lib/storage';
+import { extractYouTubeId } from '@/lib/youtube';
 
 import SummaryTab from './SummaryTab';
 import StudyNotesTab from './StudyNotesTab';
@@ -43,6 +47,9 @@ export default function StudyMaterialViewer({
   const [lecture, setLecture] = useState<Lecture>(initialLecture);
   const [activeTab, setActiveTab] = useState<string>(defaultTab);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
+
+  const youtubeId = lecture.youtubeUrl ? extractYouTubeId(lecture.youtubeUrl) : null;
 
   const tabs = [
     { id: 'summary', name: 'Executive Summary', icon: Sparkles },
@@ -81,6 +88,17 @@ export default function StudyMaterialViewer({
         </Link>
 
         <div className="flex items-center gap-2">
+          {lecture.youtubeUrl && (
+            <button
+              onClick={() => setShowVideoPlayer(!showVideoPlayer)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/40 hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-colors"
+            >
+              <YoutubeIcon className="w-3.5 h-3.5 text-rose-500" />
+              <span>{showVideoPlayer ? 'Hide Video' : 'Watch YouTube Video'}</span>
+              {showVideoPlayer ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            </button>
+          )}
+
           <button
             onClick={handleShare}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-subtle"
@@ -113,12 +131,38 @@ export default function StudyMaterialViewer({
         </div>
       </div>
 
+      {/* Embedded YouTube Player */}
+      {showVideoPlayer && youtubeId && (
+        <div className="rounded-2xl overflow-hidden bg-black border border-slate-800 shadow-elevated aspect-video max-w-3xl mx-auto animate-fade-in">
+          <iframe
+            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1`}
+            title={lecture.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+          />
+        </div>
+      )}
+
       {/* Lecture Title Header Banner */}
       <div className="p-6 rounded-2xl bg-white dark:bg-[#0e1422] border border-slate-200/80 dark:border-slate-800/80 shadow-subtle space-y-2.5">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-750">
-            {lecture.subject}
-          </span>
+          {lecture.youtubeUrl ? (
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/50">
+              <YoutubeIcon className="w-3 h-3 text-rose-500" /> YouTube Lecture
+            </span>
+          ) : (
+            <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-750">
+              {lecture.subject}
+            </span>
+          )}
+
+          {lecture.youtubeAuthor && (
+            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+              by {lecture.youtubeAuthor}
+            </span>
+          )}
+
           <span className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500">
             <Clock className="w-3 h-3" />
             {lecture.durationMinutes || 45} mins

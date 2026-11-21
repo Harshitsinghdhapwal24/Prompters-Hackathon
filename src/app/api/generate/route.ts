@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenAI } from '@google/genai';
 import { SYSTEM_PROMPT } from '@/lib/geminiPrompt';
 import { Lecture, SourceType } from '@/types/lecture';
+import { getYouTubeLectureData } from '@/lib/youtube';
 
-export const maxDuration = 120; // Allow sufficient time for multimodal AI generation
+export const maxDuration = 120;
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,6 +17,10 @@ export async function POST(req: NextRequest) {
     let fileSize = 0;
     let fileBuffer: Buffer | null = null;
     let mimeType = '';
+    let youtubeUrl = '';
+    let youtubeThumbnail = '';
+    let youtubeAuthor = '';
+    let youtubeTranscriptItems: Array<{ time: string; text: string }> = [];
 
     if (contentType.includes('multipart/form-data')) {
       const formData = await req.formData();
@@ -23,6 +28,7 @@ export async function POST(req: NextRequest) {
       subject = (formData.get('subject') as string) || '';
       rawText = (formData.get('text') as string) || '';
       sourceType = ((formData.get('sourceType') as string) as SourceType) || 'text';
+      youtubeUrl = (formData.get('youtubeUrl') as string) || '';
 
       const file = formData.get('file') as File | null;
       if (file && file.size > 0) {
@@ -32,7 +38,6 @@ export async function POST(req: NextRequest) {
         const arrayBuf = await file.arrayBuffer();
         fileBuffer = Buffer.from(arrayBuf);
 
-        // infer source type if not explicitly set
         if (mimeType.startsWith('audio/') || fileName.match(/\.(mp3|wav|m4a|aac)$/i)) {
           sourceType = 'audio';
           if (!mimeType.startsWith('audio/')) mimeType = 'audio/mp3';
@@ -56,6 +61,37 @@ export async function POST(req: NextRequest) {
       sourceType = json.sourceType || 'text';
       fileName = json.fileName || '';
       fileSize = json.fileSize || 0;
+      youtubeUrl = json.youtubeUrl || '';
+    }
+
+    // Process YouTube link if provided
+    if (youtubeUrl || sourceType === 'youtube') {
+      sourceType = 'youtube';
+      try {
+        const ytData = await getYouTubeLectureData(youtubeUrl);
+        youtubeThumbnail = ytData.thumbnailUrl;
+        youtubeAuthor = ytData.author;
+        youtubeTranscriptItems = ytData.transcriptItems;
+        youtubeUrl = ytData.url;
+
+        if (!title || title.trim() === '') {
+          title = ytData.title;
+        }
+
+        if (ytData.transcriptText) {
+          rawText = ytData.transcriptText;
+        } else if (!rawText) {
+          rawText = `YouTube Video Lecture: "${ytData.title}" by ${ytData.author}.`;
+        }
+      } catch (ytErr: any) {
+        console.error('Error fetching YouTube details:', ytErr);
+        if (!rawText && !title) {
+          return NextResponse.json(
+            { success: false, error: ytErr?.message || 'Failed to process YouTube link.' },
+            { status: 400 }
+          );
+        }
+      }
     }
 
     if (!title && fileName) {
@@ -78,10 +114,8 @@ export async function POST(req: NextRequest) {
     if (apiKey) {
       try {
         const ai = new GoogleGenAI({ apiKey });
-
         const parts: any[] = [];
 
-        // Add file part if available
         if (fileBuffer) {
           const base64Data = fileBuffer.toString('base64');
           parts.push({
@@ -96,7 +130,8 @@ export async function POST(req: NextRequest) {
 Lecture Title: "${title}"
 Subject / Discipline: "${subject}"
 Source Modality: ${sourceType}
-${rawText ? `Lecture Transcript / Content Notes:\n"""\n${rawText}\n"""` : 'Please process the attached media file completely.'}
+${youtubeUrl ? `YouTube Video URL: ${youtubeUrl} (Channel/Instructor: ${youtubeAuthor})` : ''}
+${rawText ? `Lecture Transcript / Content Notes:\n"""\n${rawText.slice(0, 40000)}\n"""` : 'Please process the attached media file completely.'}
 
 Follow all instructions in the system prompt. Return purely valid JSON according to the schema.`;
 
@@ -117,7 +152,6 @@ Follow all instructions in the system prompt. Return purely valid JSON according
         try {
           parsedData = JSON.parse(responseText);
         } catch (e) {
-          // If JSON had backticks or wrappers, clean it
           const cleaned = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
           parsedData = JSON.parse(cleaned);
         }
@@ -132,6 +166,9 @@ Follow all instructions in the system prompt. Return purely valid JSON according
           sourceType,
           sourceFileName: fileName || undefined,
           sourceFileSize: fileSize || undefined,
+          youtubeUrl: youtubeUrl || undefined,
+          youtubeThumbnail: youtubeThumbnail || undefined,
+          youtubeAuthor: youtubeAuthor || undefined,
           status: 'ready',
           summary: parsedData.summary || {
             tldr: 'Study material synthesized from input lecture content.',
@@ -187,13 +224,15 @@ Follow all instructions in the system prompt. Return purely valid JSON according
               marks: la.marks || 10,
             })),
           },
-          transcript: Array.isArray(parsedData.transcript)
+          transcript: youtubeTranscriptItems.length > 0
+            ? youtubeTranscriptItems
+            : Array.isArray(parsedData.transcript)
             ? parsedData.transcript
             : [
                 {
                   time: '00:00:00',
-                  speaker: 'Instructor',
-                  text: rawText || `Lecture content from ${fileName || title}`,
+                  speaker: youtubeAuthor || 'Instructor',
+                  text: rawText || `Lecture content from ${title}`,
                 },
               ],
         };
@@ -201,7 +240,6 @@ Follow all instructions in the system prompt. Return purely valid JSON according
         return NextResponse.json({ success: true, lecture, isLiveGemini: true });
       } catch (geminiError: any) {
         console.error('Gemini API execution error:', geminiError);
-        // If Gemini API fails (e.g. invalid key, quota, or network block), return graceful fallback or error
         return NextResponse.json(
           {
             success: false,
@@ -213,8 +251,7 @@ Follow all instructions in the system prompt. Return purely valid JSON according
       }
     }
 
-    // Fallback / Demonstration Mode (When no API key is set yet)
-    // Generates a rich, realistic academic study pack based on the user's title, subject, and text
+    // Fallback / Demonstration Mode (When no API key is provided)
     const sampleLecture = generateRealisticFallbackLecture({
       title,
       subject,
@@ -222,13 +259,17 @@ Follow all instructions in the system prompt. Return purely valid JSON according
       sourceType,
       fileName,
       fileSize,
+      youtubeUrl,
+      youtubeThumbnail,
+      youtubeAuthor,
+      youtubeTranscriptItems,
     });
 
     return NextResponse.json({
       success: true,
       lecture: sampleLecture,
       isDemoMode: true,
-      notice: 'Generated in Demonstration Mode. Add your Gemini API Key in Settings to enable direct cloud processing.',
+      notice: 'Generated in Demonstration Mode. Add your Gemini API Key in Settings for cloud custom models.',
     });
   } catch (err: any) {
     console.error('Server error handling lecture generation:', err);
@@ -246,43 +287,61 @@ function generateRealisticFallbackLecture(params: {
   sourceType: SourceType;
   fileName: string;
   fileSize: number;
+  youtubeUrl?: string;
+  youtubeThumbnail?: string;
+  youtubeAuthor?: string;
+  youtubeTranscriptItems?: Array<{ time: string; text: string }>;
 }): Lecture {
-  const { title, subject, rawText, sourceType, fileName, fileSize } = params;
+  const {
+    title,
+    subject,
+    rawText,
+    sourceType,
+    fileName,
+    fileSize,
+    youtubeUrl,
+    youtubeThumbnail,
+    youtubeAuthor,
+    youtubeTranscriptItems,
+  } = params;
   const lectureId = 'lec-' + Date.now();
 
-  const sampleExcerpt = rawText ? rawText.slice(0, 300) : 'Classroom lecture audio and conceptual breakdown.';
+  const isYouTube = sourceType === 'youtube';
 
   return {
     id: lectureId,
-    title: title || 'University Lecture on ' + subject,
+    title: title || (isYouTube ? 'YouTube Lecture Study Guide' : 'University Lecture on ' + subject),
     subject: subject || 'Science & Technology',
     createdAt: new Date().toISOString(),
     durationMinutes: 45,
     sourceType,
     sourceFileName: fileName || undefined,
     sourceFileSize: fileSize || undefined,
+    youtubeUrl: youtubeUrl || undefined,
+    youtubeThumbnail: youtubeThumbnail || undefined,
+    youtubeAuthor: youtubeAuthor || undefined,
     status: 'ready',
     summary: {
-      tldr: `Comprehensive analysis of core principles covered in "${title}". Highlights fundamental theorems, empirical applications, and essential exam takeaways.`,
+      tldr: `Comprehensive analysis of core principles covered in "${title}". Synthesizes theoretical foundations, empirical mechanisms, and high-yield examination takeaways.`,
       keyTakeaways: [
-        `Fundamental definitions and core theoretical mechanisms established for ${title}.`,
+        `Fundamental definitions and governing mechanisms established for ${title}.`,
         'Critical examination of foundational equations and governing constraints.',
         'Methodological framework for solving standard midterm and final exam problems.',
-        'Common cognitive pitfalls and exam traps identified during classroom discussion.',
+        'Common cognitive pitfalls and exam traps identified during lecture discussion.',
         'Practical real-world implications and experimental paradigms.'
       ],
-      detailedSummary: `This lecture provides a structured exploration of ${title}. 
-      
-The session begins by framing the historical and theoretical context, tracing foundational developments and identifying the operational bottlenecks addressed by modern paradigms.
+      detailedSummary: `This lecture provides a structured exploration of ${title}${youtubeAuthor ? ` presented by ${youtubeAuthor}` : ''}. 
 
-Key concepts are introduced systematically, pairing formal definitions with intuitive mechanical analogies. Special attention is directed toward mathematical formulation, derivation techniques, and boundary conditions that professors frequently test on examinations.
+The session begins by framing the theoretical and practical context, identifying key operational bottlenecks addressed by modern paradigms.
 
-The lecture concludes with a review of upcoming topics, prerequisite competencies, and recommended problem sets.`
+Key concepts are systematically analyzed, connecting mathematical formulas to mechanical intuition. Special attention is directed toward derivation techniques, boundary conditions, and high-yield problem sets.`
     },
     notes: `# ${title} — Comprehensive Study Notes
 
-## 1. Executive Overview & Core Problem Statement
-The lecture establishes the governing principles of **${subject}**, addressing the core problem:
+${youtubeAuthor ? `*Instructor/Channel: ${youtubeAuthor}*  \n*Source: YouTube Educational Video*\n\n---\n` : ''}
+
+## 1. Executive Overview & Problem Formulation
+This lecture addresses the foundational principles of **${subject}**:
 - **Primary Objective:** Rigorously understand and model the dynamics of ${title}.
 - **Underlying Challenge:** Balancing theoretical abstraction with measurable empirical constraints.
 - **Key Breakthrough:** Formulating invariant relationships that simplify multi-variable analysis.
@@ -296,37 +355,25 @@ The lecture establishes the governing principles of **${subject}**, addressing t
 - **State Variables:** Tracking transitions between states requires isolating independent versus dependent parameters.
 - **Dynamic Response:** How the system adapts under exogenous shocks or parameter variations.
 
-### Key Observation:
-\`\`\`
-[Input Stimulus / Data] ──▶ [Transformation Function f(x)] ──▶ [Equilibrium Output Y]
-\`\`\`
-
 ---
 
 ## 3. Mathematical Formalism
-Consider the standard governing equation:
+Consider the governing formulation:
 $$S(t) = \\alpha \\cdot e^{-\\lambda t} + \\int_0^t K(t - \\tau) u(\\tau) d\\tau$$
 
 Where:
 - $\\alpha$ represents initial baseline equilibrium amplitude.
 - $\\lambda$ denotes the rate of decay or relaxation time constant.
 - $K(t - \\tau)$ is the kernel function weighting historical state influence.
-
----
-
-## 4. High-Yield Exam Strategies
-1. **Never skip unit analysis:** Dimensional consistency catches over 60% of algebraic errors on midterms.
-2. **Watch for edge cases:** Evaluate behavior as $t \\to 0$ and $t \\to \\infty$.
-3. **Connect theory to intuition:** Always explain the physical or economic meaning behind mathematical symbols.
 `,
     keyConcepts: [
       {
         id: 'kc-f-1',
-        term: `${title} Primary Principle`,
+        term: `${title.split(':')[0] || title} Primary Principle`,
         definition: `The central governing theorem that dictates how states evolve and interact within ${subject}.`,
         importance: 'high',
         category: 'Theory',
-        example: 'Canonical textbook model used across engineering and physical sciences.'
+        example: 'Canonical model tested on university examinations.'
       },
       {
         id: 'kc-f-2',
@@ -443,11 +490,12 @@ Where:
         }
       ]
     },
-    transcript: [
-      { time: '00:00:10', speaker: 'Lecturer', text: `Welcome class. Today we dive into ${title}. Please have your lecture notes open to section 1.` },
-      { time: '00:04:30', speaker: 'Lecturer', text: 'Notice how the equations on the board mirror the fundamental principles we developed last week.' },
-      { time: '00:12:15', speaker: 'Lecturer', text: 'Pay close attention here: this exact derivation appeared on last year’s final examination.' },
-      { time: '00:25:40', speaker: 'Lecturer', text: 'If you remember only one thing from today, remember to check your boundary conditions before starting algebraic simplifications.' }
-    ]
+    transcript: youtubeTranscriptItems && youtubeTranscriptItems.length > 0
+      ? youtubeTranscriptItems
+      : [
+          { time: '00:00:10', speaker: youtubeAuthor || 'Lecturer', text: `Welcome to this lecture on ${title}.` },
+          { time: '00:04:30', speaker: youtubeAuthor || 'Lecturer', text: 'Notice how the equations on the board mirror the fundamental principles we developed last week.' },
+          { time: '00:12:15', speaker: youtubeAuthor || 'Lecturer', text: 'Pay close attention here: this exact derivation appeared on last year’s final examination.' }
+        ]
   };
 }

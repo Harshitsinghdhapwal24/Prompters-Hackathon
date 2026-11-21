@@ -1,4 +1,4 @@
-export type SourceType = 'audio' | 'video' | 'pdf' | 'text';
+export type SourceType = 'audio' | 'video' | 'pdf' | 'text' | 'youtube';
 
 export interface KeyConcept {
   id: string;
@@ -70,6 +70,9 @@ export interface Lecture {
   sourceType: SourceType;
   sourceFileName?: string;
   sourceFileSize?: number;
+  youtubeUrl?: string;
+  youtubeThumbnail?: string;
+  youtubeAuthor?: string;
   status: 'processing' | 'ready' | 'error';
   summary: {
     tldr: string;
