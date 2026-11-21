@@ -17,14 +17,12 @@ const ThemeContext = createContext<ThemeContextType>({
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<'dark' | 'light'>('dark');
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const settings = getStoredSettings();
     const initialTheme = settings.theme || 'dark';
     setThemeState(initialTheme);
     applyThemeClass(initialTheme);
-    setMounted(true);
   }, []);
 
   const applyThemeClass = (newTheme: 'dark' | 'light') => {
@@ -51,9 +49,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-      <div className={mounted ? '' : 'opacity-0 transition-opacity duration-150'}>
-        {children}
-      </div>
+      {children}
     </ThemeContext.Provider>
   );
 }
