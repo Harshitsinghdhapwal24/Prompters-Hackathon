@@ -15,8 +15,8 @@ export default function FlashcardsHubPage() {
   useEffect(() => {
     const data = getStoredLectures();
     setLectures(data);
-    if (data.length > 0 && !selectedId) {
-      setSelectedId(data[0].id);
+    if (data.length > 0) {
+      setSelectedId((prev) => (prev ? prev : data[0].id));
     }
   }, []);
 

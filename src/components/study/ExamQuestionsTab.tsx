@@ -56,7 +56,9 @@ export default function ExamQuestionsTab({ shortAnswer, longAnswer }: ExamQuesti
                 >
                   <button
                     onClick={() => toggleOpen(q.id)}
-                    className="w-full p-4 text-left flex items-start justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                    aria-expanded={isOpen}
+                    aria-controls={`answer-panel-${q.id}`}
+                    className="w-full p-4 text-left flex items-start justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   >
                     <div className="flex items-start gap-2.5">
                       <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex-shrink-0 mt-0.5">
@@ -67,13 +69,13 @@ export default function ExamQuestionsTab({ shortAnswer, longAnswer }: ExamQuesti
                       </h4>
                     </div>
 
-                    <div className="p-1 rounded text-slate-400 flex-shrink-0">
+                    <div className="p-1 rounded text-slate-400 flex-shrink-0" aria-hidden="true">
                       {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </div>
                   </button>
 
                   {isOpen && (
-                    <div className="p-4 pt-0 border-t border-slate-100 dark:border-slate-800/80 space-y-3 text-xs bg-slate-50/50 dark:bg-slate-900/40">
+                    <div id={`answer-panel-${q.id}`} role="region" aria-label={`Model Answer for Question ${idx + 1}`} className="p-4 pt-0 border-t border-slate-100 dark:border-slate-800/80 space-y-3 text-xs bg-slate-50/50 dark:bg-slate-900/40">
                       <div className="space-y-1 pt-3">
                         <span className="font-bold uppercase tracking-wider text-[10px] text-indigo-600 dark:text-indigo-400">
                           Model Answer:
@@ -131,7 +133,9 @@ export default function ExamQuestionsTab({ shortAnswer, longAnswer }: ExamQuesti
                 >
                   <button
                     onClick={() => toggleOpen(q.id)}
-                    className="w-full p-4 text-left flex items-start justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                    aria-expanded={isOpen}
+                    aria-controls={`answer-panel-${q.id}`}
+                    className="w-full p-4 text-left flex items-start justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                   >
                     <div className="flex items-start gap-2.5">
                       <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex-shrink-0 mt-0.5">
@@ -142,13 +146,13 @@ export default function ExamQuestionsTab({ shortAnswer, longAnswer }: ExamQuesti
                       </h4>
                     </div>
 
-                    <div className="p-1 rounded text-slate-400 flex-shrink-0">
+                    <div className="p-1 rounded text-slate-400 flex-shrink-0" aria-hidden="true">
                       {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </div>
                   </button>
 
                   {isOpen && (
-                    <div className="p-4 pt-0 border-t border-slate-100 dark:border-slate-800/80 space-y-3 text-xs bg-slate-50/50 dark:bg-slate-900/40">
+                    <div id={`answer-panel-${q.id}`} role="region" aria-label={`Model Answer for Question ${idx + 1}`} className="p-4 pt-0 border-t border-slate-100 dark:border-slate-800/80 space-y-3 text-xs bg-slate-50/50 dark:bg-slate-900/40">
                       <div className="space-y-1 pt-3">
                         <span className="font-bold uppercase tracking-wider text-[10px] text-indigo-600 dark:text-indigo-400">
                           Complete Derivation / Exemplary Solution:

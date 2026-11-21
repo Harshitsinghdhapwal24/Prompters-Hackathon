@@ -235,43 +235,55 @@ export default function LectureUploadZone() {
   return (
     <div className="max-w-2xl mx-auto space-y-5">
       {/* Tab Switcher */}
-      <div className="flex p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
+      <div role="tablist" aria-label="Upload Source Options" className="flex p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
         <button
           type="button"
+          role="tab"
+          id="tab-youtube"
+          aria-selected={activeTab === 'youtube'}
+          aria-controls="panel-youtube"
           onClick={() => setActiveTab('youtube')}
-          className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
             activeTab === 'youtube'
               ? 'bg-white dark:bg-[#0e1422] text-slate-900 dark:text-white shadow-subtle border border-slate-200/60 dark:border-slate-700/60'
               : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
           }`}
         >
-          <YoutubeIcon className="w-3.5 h-3.5 text-rose-500" />
+          <YoutubeIcon className="w-3.5 h-3.5 text-rose-500" aria-hidden="true" />
           YouTube Video
         </button>
 
         <button
           type="button"
+          role="tab"
+          id="tab-upload"
+          aria-selected={activeTab === 'upload'}
+          aria-controls="panel-upload"
           onClick={() => setActiveTab('upload')}
-          className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
             activeTab === 'upload'
               ? 'bg-white dark:bg-[#0e1422] text-slate-900 dark:text-white shadow-subtle border border-slate-200/60 dark:border-slate-700/60'
               : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
           }`}
         >
-          <UploadCloud className="w-3.5 h-3.5" />
+          <UploadCloud className="w-3.5 h-3.5" aria-hidden="true" />
           Audio / Video File
         </button>
 
         <button
           type="button"
+          role="tab"
+          id="tab-text"
+          aria-selected={activeTab === 'text'}
+          aria-controls="panel-text"
           onClick={() => setActiveTab('text')}
-          className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
             activeTab === 'text'
               ? 'bg-white dark:bg-[#0e1422] text-slate-900 dark:text-white shadow-subtle border border-slate-200/60 dark:border-slate-700/60'
               : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
           }`}
         >
-          <FileText className="w-3.5 h-3.5" />
+          <FileText className="w-3.5 h-3.5" aria-hidden="true" />
           Paste Transcript
         </button>
       </div>
@@ -281,45 +293,48 @@ export default function LectureUploadZone() {
         {/* Meta inputs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <div>
-            <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+            <label htmlFor="lecture-title-input" className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
               Lecture Title <span className="text-slate-400 font-normal">(optional)</span>
             </label>
             <input
+              id="lecture-title-input"
               type="text"
               value={lectureTitle}
               onChange={(e) => setLectureTitle(e.target.value)}
               placeholder="e.g., CS 182: Transformers & Attention"
               disabled={isProcessing}
-              className="w-full px-3.5 py-2 text-xs sm:text-sm bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400"
+              className="w-full px-3.5 py-2 text-xs sm:text-sm bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+            <label htmlFor="lecture-subject-input" className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
               Course / Subject
             </label>
             <input
+              id="lecture-subject-input"
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="e.g., Computer Science, Biochemistry"
               disabled={isProcessing}
-              className="w-full px-3.5 py-2 text-xs sm:text-sm bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400"
+              className="w-full px-3.5 py-2 text-xs sm:text-sm bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400"
             />
           </div>
         </div>
 
         {/* Tab 1: YouTube Video Link */}
         {activeTab === 'youtube' && (
-          <div className="space-y-3">
+          <div id="panel-youtube" role="tabpanel" aria-labelledby="tab-youtube" className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+              <label htmlFor="youtube-url-input" className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
                 YouTube Video Link
               </label>
               <div className="flex gap-2">
                 <div className="relative flex-1">
-                  <YoutubeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rose-500" />
+                  <YoutubeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rose-500" aria-hidden="true" />
                   <input
+                    id="youtube-url-input"
                     type="url"
                     value={youtubeUrl}
                     onChange={(e) => {
@@ -330,7 +345,7 @@ export default function LectureUploadZone() {
                     }}
                     placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
                     disabled={isProcessing}
-                    className="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 font-mono"
+                    className="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 font-mono"
                   />
                 </div>
 
@@ -338,9 +353,9 @@ export default function LectureUploadZone() {
                   type="button"
                   onClick={() => handleFetchYouTubePreview(youtubeUrl)}
                   disabled={loadingPreview || !youtubeUrl}
-                  className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-50"
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
                 >
-                  {loadingPreview ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Fetch Info'}
+                  {loadingPreview ? <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" /> : 'Fetch Info'}
                 </button>
               </div>
             </div>
@@ -424,9 +439,18 @@ export default function LectureUploadZone() {
 
         {/* Tab 2: Upload File */}
         {activeTab === 'upload' && (
-          <div>
+          <div id="panel-upload" role="tabpanel" aria-labelledby="tab-upload">
             {!selectedFile ? (
               <div
+                role="button"
+                tabIndex={0}
+                aria-label="Upload lecture recording or document. Click or drag and drop audio, video, or PDF files here."
+                onKeyDown={(e) => {
+                  if (e.key === ' ' || e.key === 'Enter') {
+                    e.preventDefault();
+                    fileInputRef.current?.click();
+                  }
+                }}
                 onDragOver={(e) => {
                   e.preventDefault();
                   setDragOver(true);
@@ -434,7 +458,7 @@ export default function LectureUploadZone() {
                 onDragLeave={() => setDragOver(false)}
                 onDrop={handleFileDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-2xl p-8 sm:p-10 text-center cursor-pointer transition-all duration-150 ${
+                className={`border-2 border-dashed rounded-2xl p-8 sm:p-10 text-center cursor-pointer transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
                   dragOver
                     ? 'border-indigo-500 bg-indigo-500/5'
                     : 'border-slate-300 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 bg-white dark:bg-[#0e1422]'
@@ -442,14 +466,16 @@ export default function LectureUploadZone() {
               >
                 <input
                   ref={fileInputRef}
+                  id="lecture-file-input"
                   type="file"
                   accept=".mp3,.wav,.m4a,.mp4,.webm,.pdf,.txt,.md"
+                  aria-label="Choose lecture file from computer"
                   onChange={(e) => e.target.files?.[0] && handleFileSelection(e.target.files[0])}
                   className="hidden"
                 />
 
                 <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 mx-auto mb-3 shadow-subtle">
-                  <UploadCloud className="w-6 h-6 text-indigo-500" />
+                  <UploadCloud className="w-6 h-6 text-indigo-500" aria-hidden="true" />
                 </div>
 
                 <h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white">
@@ -461,20 +487,21 @@ export default function LectureUploadZone() {
 
                 <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5">
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                    <FileAudio className="w-3 h-3 text-indigo-500" /> MP3 / WAV
+                    <FileAudio className="w-3 h-3 text-indigo-500" aria-hidden="true" /> MP3 / WAV
                   </span>
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                    <FileVideo className="w-3 h-3 text-blue-500" /> MP4 / WebM
+                    <FileVideo className="w-3 h-3 text-blue-500" aria-hidden="true" /> MP4 / WebM
                   </span>
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                    <FileText className="w-3 h-3 text-rose-500" /> PDF / TXT
+                    <FileText className="w-3 h-3 text-rose-500" aria-hidden="true" /> PDF / TXT
                   </span>
                 </div>
 
                 <div className="mt-4">
                   <button
                     type="button"
-                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 transition-colors"
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                    aria-label="Browse files on your computer"
                   >
                     Select File
                   </button>
@@ -484,7 +511,7 @@ export default function LectureUploadZone() {
               <div className="p-4 rounded-xl bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 shadow-subtle flex items-center justify-between">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-indigo-500">
-                    <FileUp className="w-5 h-5" />
+                    <FileUp className="w-5 h-5" aria-hidden="true" />
                   </div>
                   <div className="truncate">
                     <p className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white truncate">
@@ -500,10 +527,11 @@ export default function LectureUploadZone() {
                   type="button"
                   onClick={() => setSelectedFile(null)}
                   disabled={isProcessing}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
                   title="Remove file"
+                  aria-label={`Remove file ${selectedFile.name}`}
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
             )}
@@ -512,20 +540,21 @@ export default function LectureUploadZone() {
 
         {/* Tab 3: Transcript Input */}
         {activeTab === 'text' && (
-          <div>
-            <label className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+          <div id="panel-text" role="tabpanel" aria-labelledby="tab-text" className="space-y-1">
+            <label htmlFor="transcript-text-input" className="block text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
               Lecture Transcript or Raw Notes
             </label>
             <textarea
+              id="transcript-text-input"
               rows={8}
               value={transcriptText}
               onChange={(e) => setTranscriptText(e.target.value)}
               disabled={isProcessing}
               placeholder="Paste classroom transcript, speech-to-text, or textbook notes here..."
-              className="w-full p-3.5 text-xs sm:text-sm bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 leading-relaxed font-mono"
+              className="w-full p-3.5 text-xs sm:text-sm bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400 leading-relaxed font-mono"
             />
             <div className="mt-1.5 flex justify-between text-[11px] text-slate-400">
-              <span>{transcriptText.length} characters</span>
+              <span aria-live="polite">{transcriptText.length} characters</span>
               <button
                 type="button"
                 onClick={() => {
@@ -535,7 +564,8 @@ export default function LectureUploadZone() {
                     `Welcome everyone. Today we begin our module on Dynamic Programming (DP). Remember: DP is essentially recursion with memoization and subproblem identification. When can we apply DP? Two conditions must hold: 1) Optimal Substructure, meaning an optimal solution to the problem contains optimal solutions to subproblems, and 2) Overlapping Subproblems, meaning the space of subproblems must be small, so a recursive algorithm visits the same subproblems repeatedly rather than generating new ones. Take the Fibonacci sequence: computing fib(5) recursively without caching has exponential complexity O(2^n). But if you memoize results in a lookup table or bottom-up array, time complexity collapses to linear O(n). Always analyze space-time trade-offs on exams!`
                   );
                 }}
-                className="text-indigo-600 dark:text-indigo-400 hover:underline"
+                className="text-indigo-600 dark:text-indigo-400 hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500 rounded"
+                aria-label="Load MIT Dynamic Programming sample transcript"
               >
                 Insert Sample MIT Lecture
               </button>
@@ -545,15 +575,22 @@ export default function LectureUploadZone() {
 
         {/* Error Message */}
         {errorMessage && (
-          <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs">
-            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+          <div role="alert" aria-live="assertive" className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 flex items-start gap-2.5 text-rose-700 dark:text-rose-300 text-xs">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" aria-hidden="true" />
             <div className="flex-1">{errorMessage}</div>
           </div>
         )}
 
         {/* Progress Tracker */}
         {isProcessing && (
-          <div className="p-5 rounded-xl bg-slate-50 dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 space-y-3">
+          <div
+            role="progressbar"
+            aria-valuenow={Math.round(((currentStep + 1) / steps.length) * 100)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Lecture synthesis progress"
+            className="p-5 rounded-xl bg-slate-50 dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 space-y-3"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <Loader2 className="w-4 h-4 text-indigo-500 animate-spin" />

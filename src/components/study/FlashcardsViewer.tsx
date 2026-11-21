@@ -13,18 +13,23 @@ import { Flashcard, Lecture } from '@/types/lecture';
 import { updateLecture } from '@/lib/storage';
 
 interface FlashcardsViewerProps {
-  lecture: Lecture;
+  lecture?: Lecture;
+  flashcards?: Flashcard[];
   onUpdateLecture?: (updated: Lecture) => void;
 }
 
-export default function FlashcardsViewer({ lecture, onUpdateLecture }: FlashcardsViewerProps) {
-  const [cards, setCards] = useState<Flashcard[]>(lecture.flashcards || []);
+export default function FlashcardsViewer({ lecture, flashcards, onUpdateLecture }: FlashcardsViewerProps) {
+  const [cards, setCards] = useState<Flashcard[]>(flashcards || lecture?.flashcards || []);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
 
   useEffect(() => {
-    setCards(lecture.flashcards || []);
-  }, [lecture]);
+    if (flashcards) {
+      setCards(flashcards);
+    } else if (lecture?.flashcards) {
+      setCards(lecture.flashcards);
+    }
+  }, [lecture, flashcards]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -35,16 +40,18 @@ export default function FlashcardsViewer({ lecture, onUpdateLecture }: Flashcard
         setIsFlipped((prev) => !prev);
       } else if (e.code === 'ArrowRight') {
         e.preventDefault();
-        handleNext();
+        setIsFlipped(false);
+        setCurrentIndex((prev) => (prev < cards.length - 1 ? prev + 1 : 0));
       } else if (e.code === 'ArrowLeft') {
         e.preventDefault();
-        handlePrev();
+        setIsFlipped(false);
+        setCurrentIndex((prev) => (prev > 0 ? prev - 1 : cards.length - 1));
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, cards.length]);
+  }, [cards.length]);
 
   const handleNext = () => {
     setIsFlipped(false);
@@ -59,9 +66,11 @@ export default function FlashcardsViewer({ lecture, onUpdateLecture }: Flashcard
   const toggleMastered = (cardId: string) => {
     const updatedCards = cards.map((c) => (c.id === cardId ? { ...c, mastered: !c.mastered } : c));
     setCards(updatedCards);
-    const updatedLecture = { ...lecture, flashcards: updatedCards };
-    updateLecture(updatedLecture);
-    if (onUpdateLecture) onUpdateLecture(updatedLecture);
+    if (lecture) {
+      const updatedLecture = { ...lecture, flashcards: updatedCards };
+      updateLecture(updatedLecture);
+      if (onUpdateLecture) onUpdateLecture(updatedLecture);
+    }
   };
 
   const handleShuffle = () => {
@@ -74,9 +83,11 @@ export default function FlashcardsViewer({ lecture, onUpdateLecture }: Flashcard
   const handleResetProgress = () => {
     const resetCards = cards.map((c) => ({ ...c, mastered: false }));
     setCards(resetCards);
-    const updatedLecture = { ...lecture, flashcards: resetCards };
-    updateLecture(updatedLecture);
-    if (onUpdateLecture) onUpdateLecture(updatedLecture);
+    if (lecture) {
+      const updatedLecture = { ...lecture, flashcards: resetCards };
+      updateLecture(updatedLecture);
+      if (onUpdateLecture) onUpdateLecture(updatedLecture);
+    }
   };
 
   if (!cards || cards.length === 0) {
@@ -139,7 +150,17 @@ export default function FlashcardsViewer({ lecture, onUpdateLecture }: Flashcard
 
       {/* 3D Flipping Card Container */}
       <div
-        className="perspective-1000 cursor-pointer min-h-[300px] sm:min-h-[340px]"
+        role="button"
+        tabIndex={0}
+        aria-label={`Flashcard ${currentIndex + 1} of ${cards.length}. Question: ${currentCard.front}. Press space or enter to flip.`}
+        aria-pressed={isFlipped}
+        onKeyDown={(e) => {
+          if (e.key === ' ' || e.key === 'Enter') {
+            e.preventDefault();
+            setIsFlipped(!isFlipped);
+          }
+        }}
+        className="perspective-1000 cursor-pointer min-h-[300px] sm:min-h-[340px] focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-2xl"
         onClick={() => setIsFlipped(!isFlipped)}
       >
         <div

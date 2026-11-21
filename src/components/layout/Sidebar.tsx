@@ -77,6 +77,7 @@ export default function Sidebar() {
 
       {/* Sidebar Container */}
       <aside
+        aria-label="Application Sidebar"
         className={`fixed top-0 bottom-0 left-0 z-40 w-64 bg-white/95 dark:bg-[#0b101b]/95 backdrop-blur-md border-r border-slate-200/80 dark:border-slate-800/80 flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
@@ -86,10 +87,11 @@ export default function Sidebar() {
           <Link
             href="/"
             onClick={() => setMobileOpen(false)}
-            className="flex items-center gap-2.5 group"
+            className="flex items-center gap-2.5 group focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-xl"
+            aria-label="LectureLens Dashboard Home"
           >
             <div className="w-9 h-9 rounded-xl bg-slate-900 dark:bg-slate-800 border border-slate-700/60 flex items-center justify-center text-white shadow-sm group-hover:border-indigo-500/80 transition-colors">
-              <Compass className="w-4 h-4 text-indigo-400 group-hover:rotate-45 transition-transform" />
+              <Compass className="w-4 h-4 text-indigo-400 group-hover:rotate-45 transition-transform" aria-hidden="true" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
@@ -106,7 +108,7 @@ export default function Sidebar() {
         </div>
 
         {/* Navigation Items */}
-        <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav aria-label="Main Navigation" className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -117,13 +119,14 @@ export default function Sidebar() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-between px-3.5 py-2.5 my-2.5 rounded-xl text-xs font-semibold transition-all duration-150 bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 group"
+                  aria-current={isActive ? 'page' : undefined}
+                  className="flex items-center justify-between px-3.5 py-2.5 my-2.5 rounded-xl text-xs font-semibold transition-all duration-150 bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm shadow-indigo-600/20 group focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
                 >
                   <div className="flex items-center gap-2.5">
-                    <Icon className="w-4 h-4 text-white" />
+                    <Icon className="w-4 h-4 text-white" aria-hidden="true" />
                     <span>{item.name}</span>
                   </div>
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-200" />
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-200" aria-hidden="true" />
                 </Link>
               );
             }
@@ -133,7 +136,8 @@ export default function Sidebar() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className={`flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-medium transition-all duration-150 ${
+                aria-current={isActive ? 'page' : undefined}
+                className={`flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
                   isActive
                     ? 'bg-slate-100 dark:bg-slate-800/80 text-slate-900 dark:text-white font-semibold border border-slate-200/80 dark:border-slate-700/60 shadow-subtle'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850 hover:text-slate-900 dark:hover:text-slate-200'
@@ -141,6 +145,7 @@ export default function Sidebar() {
               >
                 <div className="flex items-center gap-2.5">
                   <Icon
+                    aria-hidden="true"
                     className={`w-4 h-4 ${
                       isActive
                         ? 'text-indigo-600 dark:text-indigo-400'
@@ -163,7 +168,7 @@ export default function Sidebar() {
               </Link>
             );
           })}
-        </div>
+        </nav>
 
         {/* AI Engine Status Card */}
         <div className="p-3 mx-3 mb-2 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800/80">

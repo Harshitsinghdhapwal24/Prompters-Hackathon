@@ -32,6 +32,10 @@ export function formatOffsetToTime(offsetMs: number): string {
   return `${pad(minutes)}:${pad(seconds)}`;
 }
 
+export function parseSecondsToTimestamp(seconds: number): string {
+  return formatOffsetToTime(seconds * 1000);
+}
+
 export async function fetchYouTubeMetadata(videoId: string): Promise<{
   title: string;
   author: string;

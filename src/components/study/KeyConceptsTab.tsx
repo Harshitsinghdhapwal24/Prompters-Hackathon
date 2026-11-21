@@ -35,23 +35,25 @@ export default function KeyConceptsTab({ keyConcepts, formulas }: KeyConceptsTab
       {/* Search & Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
         <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" aria-hidden="true" />
           <input
-            type="text"
+            type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Filter concepts & formulas..."
-            className="w-full pl-9 pr-4 py-1.5 text-xs bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400"
+            aria-label="Filter concepts and formulas"
+            className="w-full pl-9 pr-4 py-1.5 text-xs bg-white dark:bg-[#0e1422] border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400"
           />
         </div>
 
         {/* Priority Filter Pills */}
-        <div className="flex items-center gap-1.5 self-start sm:self-auto">
+        <div className="flex items-center gap-1.5 self-start sm:self-auto" role="group" aria-label="Priority filter">
           {(['all', 'high', 'medium', 'low'] as const).map((p) => (
             <button
               key={p}
               onClick={() => setFilterPriority(p)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium capitalize transition-colors ${
+              aria-pressed={filterPriority === p}
+              className={`px-2.5 py-1 rounded-lg text-xs font-medium capitalize transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
                 filterPriority === p
                   ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-subtle'
                   : 'bg-white dark:bg-[#0e1422] text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'

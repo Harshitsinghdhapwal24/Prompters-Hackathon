@@ -106,12 +106,17 @@ export default function SettingsView() {
             Stored locally in your browser. Leave empty to use Demonstration Mode with intelligent auto-synthesis.
           </p>
 
+          <label htmlFor="gemini-api-key-input" className="sr-only">
+            Google Gemini API Key
+          </label>
           <input
+            id="gemini-api-key-input"
             type="password"
             value={apiKeyInput}
             onChange={(e) => setApiKeyInput(e.target.value)}
             placeholder="AIzaSy..."
-            className="w-full px-3.5 py-2 text-xs sm:text-sm font-mono bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400"
+            aria-label="Google Gemini API Key"
+            className="w-full px-3.5 py-2 text-xs sm:text-sm font-mono bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 text-slate-900 dark:text-slate-100 placeholder-slate-400"
           />
 
           <div className="flex items-center gap-1.5 text-[11px] text-slate-400">

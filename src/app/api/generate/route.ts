@@ -3,11 +3,20 @@ import { GoogleGenAI } from '@google/genai';
 import { SYSTEM_PROMPT } from '@/lib/geminiPrompt';
 import { Lecture, SourceType } from '@/types/lecture';
 import { getYouTubeLectureData } from '@/lib/youtube';
+import { checkRateLimit } from '@/lib/rateLimit';
 
 export const maxDuration = 120;
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+    const rate = checkRateLimit(ip, 30);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { success: false, error: 'Rate limit exceeded. Please wait a moment before generating new notes.' },
+        { status: 429, headers: { 'Retry-After': '60' } }
+      );
+    }
     const contentType = req.headers.get('content-type') || '';
     let title = '';
     let subject = '';
