@@ -654,6 +654,240 @@ When solving problems under non-standard conditions, verify the following bounda
         correctAnswerIndex: 1,
         explanation: 'Large residuals signal that the basis functions do not fully account for variance, or that noise is skewing observations.',
         topic: 'Error Analysis'
+      },
+      {
+        id: 'q-f-3',
+        question: `Which mathematical property ensures stability in asymptotic regimes for ${subject}?`,
+        options: [
+          'All system poles must lie in the open left half of the complex plane.',
+          'Eigenvalues must grow unbounded exponentially.',
+          'The determinant of the transition matrix must be zero.',
+          'The output sequence must be monotonically alternating.'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Poles with negative real parts guarantee bounded-input bounded-output (BIBO) stability as t approaches infinity.',
+        topic: 'Stability Theory'
+      },
+      {
+        id: 'q-f-4',
+        question: `What is the primary role of the normalization factor in governing equations of ${title}?`,
+        options: [
+          'To increase computation time for security.',
+          'To preserve total probability or unit energy conservation across continuous transformations.',
+          'To invert the sign of all dependent variables.',
+          'To round floating point numbers to integers.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Normalization preserves integral metrics such that the area under probability distributions or energy density functions equals unity.',
+        topic: 'Conservation Laws'
+      },
+      {
+        id: 'q-f-5',
+        question: 'How does introducing a regularization penalty (e.g. L2 ridge penalty) affect model generalization?',
+        options: [
+          'It forces weights to zero and produces severe underfitting always.',
+          'It constrains coefficient magnitude, mitigating overfitting by trading off variance for a small amount of bias.',
+          'It doubles the number of training iterations required without benefit.',
+          'It converts continuous loss surfaces into non-convex step functions.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Regularization shrinks overly sensitive weights, stabilizing predictions on out-of-distribution test sets.',
+        topic: 'Regularization'
+      },
+      {
+        id: 'q-f-6',
+        question: `When the derivative of the loss function vanishes (df/dx = 0), what test confirms whether a local extremum is a true minimum?`,
+        options: [
+          'The first derivative must be strictly positive.',
+          'The Hessian matrix (second derivative) must be positive definite.',
+          'The determinant of the input matrix must equal -1.',
+          'The learning rate must be set to 1.0.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'A positive definite Hessian indicates positive local curvature in all directions, confirming a strict local minimum.',
+        topic: 'Optimization'
+      },
+      {
+        id: 'q-f-7',
+        question: 'What is the consequence of violating the Nyquist-Shannon sampling criterion?',
+        options: [
+          'Aliasing, where high-frequency spectral components fold into and corrupt lower frequency bands.',
+          'Instantaneous loss of DC offset voltages.',
+          'Sampling rate increases automatically.',
+          'Bandwidth becomes zero.'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Sampling at less than twice the maximum frequency folds high frequencies into the baseband as indistinguishable aliases.',
+        topic: 'Signal Processing'
+      },
+      {
+        id: 'q-f-8',
+        question: `Which asymptotic complexity class models algorithms whose runtime doubles with each additional input element?`,
+        options: [
+          'O(N^2)',
+          'O(N log N)',
+          'O(2^N) Exponential',
+          'O(N!) Factorial'
+        ],
+        correctAnswerIndex: 2,
+        explanation: 'Exponential algorithms O(2^N) double their operational count with every single increment in input size N.',
+        topic: 'Computational Complexity'
+      },
+      {
+        id: 'q-f-9',
+        question: 'Under what physical conditions does the continuum hypothesis break down?',
+        options: [
+          'When the Knudsen number Kn > 0.01 and molecular mean free path approaches characteristic system length.',
+          'When temperature is constant throughout the volume.',
+          'When pressure is greater than 1 atmosphere.',
+          'When velocity is strictly subsonic.'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'When the mean free path between collisions is comparable to system geometry, continuum fluid mechanics fails and molecular dynamics applies.',
+        topic: 'Continuum Mechanics'
+      },
+      {
+        id: 'q-f-10',
+        question: 'In statistical inference, what does a Type I error signify?',
+        options: [
+          'Failing to reject a false null hypothesis (False Negative).',
+          'Incorrectly rejecting a true null hypothesis (False Positive).',
+          'Calculating an incorrect sample mean.',
+          'Selecting an unrepresentative sample size.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'A Type I error occurs when the researcher rejects H0 even though H0 was actually true, with probability equal to alpha.',
+        topic: 'Hypothesis Testing'
+      },
+      {
+        id: 'q-f-11',
+        question: `What guarantees that the iterative algorithm will converge to a unique fixed point in ${subject}?`,
+        options: [
+          'The Banach Fixed-Point Theorem, requiring the mapping to be a contraction on a complete metric space.',
+          'Setting initial parameters to zero.',
+          'Using double-precision floating point representations.',
+          'Terminating the loop after 100 cycles.'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Contraction mappings on complete metric spaces guarantee both existence and uniqueness of a single fixed point.',
+        topic: 'Fixed-Point Theory'
+      },
+      {
+        id: 'q-f-12',
+        question: 'Why is cross-entropy loss preferred over mean squared error (MSE) for categorical classification problems?',
+        options: [
+          'MSE creates flat saturation plateaus with vanishing gradients when coupled with sigmoid or softmax outputs.',
+          'Cross-entropy loss requires fewer calculations.',
+          'MSE is strictly non-differentiable.',
+          'Cross-entropy converts categorical labels into continuous values.'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Cross-entropy linearizes the exponential denominator of softmax, providing strong non-vanishing gradient signals even when mistakes are large.',
+        topic: 'Loss Functions'
+      },
+      {
+        id: 'q-f-13',
+        question: 'What is the role of an integrating factor in solving first-order linear differential equations?',
+        options: [
+          'It transforms the left-hand side into the derivative of a product of functions via the product rule.',
+          'It replaces differential terms with algebraic polynomials.',
+          'It cancels non-homogeneous forcing terms completely.',
+          'It forces the equation into an eigenvalue problem.'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Multiplying by mu(x) = exp(integral P(x)dx) rewrites d/dx[mu(x)*y] = mu(x)*Q(x), allowing direct integration.',
+        topic: 'Differential Equations'
+      },
+      {
+        id: 'q-f-14',
+        question: 'What does the Central Limit Theorem state regarding the sample mean of independent, identically distributed random variables?',
+        options: [
+          'The distribution of sample means approaches a normal Gaussian distribution as sample size grows large, regardless of population shape.',
+          'The variance of the sample mean increases proportionally to sample size.',
+          'The population median equals the sample mode.',
+          'Outliers are strictly impossible in large datasets.'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'As N goes to infinity, the standardized sample mean approaches N(0, 1) provided the underlying distribution has finite variance.',
+        topic: 'Probability Theory'
+      },
+      {
+        id: 'q-f-15',
+        question: 'What is the key advantage of singular value decomposition (SVD) over standard eigendecomposition?',
+        options: [
+          'SVD applies to any arbitrary rectangular m x n matrix, whereas eigendecomposition requires square diagonalizable matrices.',
+          'SVD does not require floating point arithmetic.',
+          'SVD eliminates the need for matrix transposition.',
+          'SVD is computed in O(1) time.'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Every real m x n matrix admits an SVD A = U * Sigma * V^T, making it universally applicable for dimensionality reduction.',
+        topic: 'Linear Algebra'
+      },
+      {
+        id: 'q-f-16',
+        question: 'What physical principle dictates that entropy in an isolated thermodynamic system cannot decrease over time?',
+        options: [
+          'The First Law of Thermodynamics.',
+          'The Second Law of Thermodynamics.',
+          'The Zeroth Law of Thermal Equilibrium.',
+          'The Principle of Least Action.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'The Second Law states that Delta S_isolated >= 0, establishing the irreversible arrow of physical time.',
+        topic: 'Thermodynamics'
+      },
+      {
+        id: 'q-f-17',
+        question: 'In Bayesian inference, what does the posterior distribution represent?',
+        options: [
+          'The updated probability distribution of parameters after observing empirical evidence.',
+          'The prior belief before any data was collected.',
+          'The marginal likelihood of the evidence alone.',
+          'The unnormalized sum of errors.'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Posterior = (Likelihood * Prior) / Evidence, reflecting rational belief revision after data observation.',
+        topic: 'Bayesian Statistics'
+      },
+      {
+        id: 'q-f-18',
+        question: 'What is the primary vulnerability of gradient descent algorithms on non-convex optimization landscapes?',
+        options: [
+          'Getting trapped in suboptimal local minima or saddle points where gradients vanish.',
+          'Lack of mathematical continuity in standard functions.',
+          'Inability to calculate step directions.',
+          'Convergence speed being too fast for monitoring.'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Non-convex surfaces possess numerous saddle points and local minima where gradient norm is zero, stalling vanilla gradient descent.',
+        topic: 'Optimization'
+      },
+      {
+        id: 'q-f-19',
+        question: 'What mechanism allows stochastic gradient descent (SGD) with momentum to escape shallow local minima?',
+        options: [
+          'Accumulating velocity from previous step vectors, carrying the optimizer across flat regions and shallow valleys.',
+          'Resetting weights to random seeds whenever loss stops dropping.',
+          'Computing exact second-order curvature at every step.',
+          'Setting batch size equal to the entire dataset.'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Momentum v = beta * v + (1 - beta) * grad dampens high-frequency oscillations and maintains momentum through shallow traps.',
+        topic: 'Machine Learning'
+      },
+      {
+        id: 'q-f-20',
+        question: `How does the principle of dimensional homogeneity safeguard mathematical derivations in ${subject}?`,
+        options: [
+          'Every additive term on both sides of a valid physical equation must possess identical physical dimensions.',
+          'All parameters must be unitless integers.',
+          'Equations can only feature dimensionless constants.',
+          'Derivatives with respect to time must equal zero.'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Buckingham Pi theorem and dimensional homogeneity require that terms combined by addition or equality share identical base units (e.g., kg*m/s^2).',
+        topic: 'Dimensional Analysis'
       }
     ],
     examQuestions: {

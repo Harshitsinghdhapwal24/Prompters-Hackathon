@@ -333,6 +333,227 @@ Because the attention weight matrix $\\text{softmax}\\left(\\frac{Q K^T}{\\sqrt{
         correctAnswerIndex: 2,
         explanation: 'Positional encodings inject positional wave signals into token embeddings so the attention layers can distinguish sequence order.',
         topic: 'Architecture'
+      },
+      {
+        id: 'q-4',
+        question: 'What happens to the Softmax function when the inner product scores between Query and Key vectors grow very large without scaling?',
+        options: [
+          'The Softmax output degenerates into a uniform distribution.',
+          'Softmax gradients vanish because probabilities push toward 1 and 0 with infinitesimal derivative values.',
+          'The loss function diverges immediately to negative infinity.',
+          'The attention matrix becomes non-invertible.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'For large values, Softmax pushes outputs to extreme 0 or 1, where the gradient of Softmax is close to zero, causing severe gradient vanishing during backpropagation.',
+        topic: 'Mathematics'
+      },
+      {
+        id: 'q-5',
+        question: 'In standard Multi-Head Attention with h = 8 heads and model dimension d_model = 512, what is the dimension d_k of each head projection?',
+        options: [
+          '512',
+          '256',
+          '64',
+          '128'
+        ],
+        correctAnswerIndex: 2,
+        explanation: 'Each head dimension is calculated as d_k = d_model / h = 512 / 8 = 64.',
+        topic: 'Hyperparameters'
+      },
+      {
+        id: 'q-6',
+        question: 'What is the theoretical time complexity of computing standard self-attention for a sequence length of N and hidden dimension d?',
+        options: [
+          'O(N * d)',
+          'O(N^2 * d)',
+          'O(N * d^2)',
+          'O(N^3)'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Computing the QK^T matrix multiplication takes O(N^2 * d), and multiplying the resulting N x N attention matrix by V takes another O(N^2 * d).',
+        topic: 'Complexity'
+      },
+      {
+        id: 'q-7',
+        question: 'What is the primary architectural purpose of the residual skip-connections around each Transformer sub-layer?',
+        options: [
+          'To double the parameter capacity of the model.',
+          'To provide an unobstructed gradient highway, preventing vanishing gradients during deep backpropagation.',
+          'To perform token tokenization and vocabulary lookup.',
+          'To compress context into lower-rank embeddings.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Residual connections x + Sublayer(x) ensure that gradients can propagate directly through the identity pathway across dozens of layers without attenuation.',
+        topic: 'Optimization'
+      },
+      {
+        id: 'q-8',
+        question: 'How does Layer Normalization differ fundamentally from Batch Normalization in natural language processing?',
+        options: [
+          'LayerNorm normalizes across all batch items at a single timestamp.',
+          'LayerNorm normalizes across the feature dimensions for each individual token independently of batch statistics.',
+          'LayerNorm requires running averages of population mean during inference.',
+          'LayerNorm is only used in computer vision models.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Layer Normalization computes the mean and variance across the channel/hidden features for a single token, avoiding dependency on variable batch sizes or sequence lengths.',
+        topic: 'Normalization'
+      },
+      {
+        id: 'q-9',
+        question: 'In an autoregressive decoder (like GPT), how is causal self-attention enforced so tokens cannot peek into future positions?',
+        options: [
+          'Future positions in the QK^T matrix are set to zero before Softmax.',
+          'Future positions in the QK^T matrix are set to -infinity before applying Softmax.',
+          'Future tokens are discarded from the vocabulary during training.',
+          'Backward gradients are multiplied by -1.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Setting upper-triangular logits to -infinity ensures exp(-inf) = 0 after Softmax, strictly preventing attention weights from allocating probability mass to future tokens.',
+        topic: 'Decoder'
+      },
+      {
+        id: 'q-10',
+        question: 'In a Transformer Encoder-Decoder architecture (e.g. original Vaswani paper), where do the Queries, Keys, and Values come from in the cross-attention layer?',
+        options: [
+          'Queries from encoder, Keys and Values from decoder.',
+          'Queries from decoder, Keys and Values from encoder final output.',
+          'Queries, Keys, and Values all come from the input prompt.',
+          'Queries come from the output layer, Keys and Values from positional embeddings.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'In cross-attention, the decoder generates Queries representing what it needs to predict next, which attend to Keys and Values produced by the encoder.',
+        topic: 'Cross-Attention'
+      },
+      {
+        id: 'q-11',
+        question: 'What is the typical inner dimension of the position-wise Feed-Forward Network (FFN) relative to d_model?',
+        options: [
+          '0.5 * d_model',
+          'Equal to d_model',
+          '4 * d_model (e.g., 2048 for d_model = 512)',
+          '16 * d_model'
+        ],
+        correctAnswerIndex: 2,
+        explanation: 'The standard Transformer FFN expands the dimension by a factor of 4 (d_ff = 4 * d_model) in the first linear layer before projecting back to d_model in the second linear layer.',
+        topic: 'Architecture'
+      },
+      {
+        id: 'q-12',
+        question: 'What is the primary operational advantage of Rotary Position Embeddings (RoPE) compared to absolute sinusoidal embeddings?',
+        options: [
+          'RoPE completely removes the need for vector dot-products.',
+          'RoPE naturally incorporates relative token distance via complex rotational angles that decay gracefully at long context lengths.',
+          'RoPE reduces model parameter count to zero.',
+          'RoPE allows non-differentiable training.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'RoPE applies an orthogonal 2D rotation to 2D slices of query and key vectors such that their dot product depends strictly on relative offset (m - n).',
+        topic: 'Embeddings'
+      },
+      {
+        id: 'q-13',
+        question: 'During autoregressive generation, what is the role of the Key-Value (KV) Cache?',
+        options: [
+          'It caches model weights in CPU RAM.',
+          'It stores previously computed Key and Value tensors for past tokens so only the newly generated token needs computation.',
+          'It caches user prompt history across different users.',
+          'It compresses the vocabulary into a 16-bit integer table.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'By caching past Keys and Values, the generation step for token t only requires computing Q_t and attending over cached K and V, turning an O(N^2) step into O(N).',
+        topic: 'Inference'
+      },
+      {
+        id: 'q-14',
+        question: 'How does FlashAttention achieve 2x to 4x wall-clock speedup and sub-quadratic memory footprint during training?',
+        options: [
+          'It approximates the Softmax matrix using low-rank random Fourier features.',
+          'It tiles the input matrices into fast GPU On-Chip SRAM, computing Softmax online without ever writing the full N x N attention matrix to slow HBM.',
+          'It prunes 90% of the attention weights dynamically.',
+          'It compiles the Transformer into C++ binary code.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'FlashAttention is an IO-aware algorithm that leverages online softmax and tiling to compute exact attention inside SRAM, avoiding memory bandwidth bottlenecks on high-bandwidth memory (HBM).',
+        topic: 'Hardware'
+      },
+      {
+        id: 'q-15',
+        question: 'What does "Weight Tying" refer to in state-of-the-art Transformer language models?',
+        options: [
+          'Sharing weight tensors between LayerNorm and attention heads.',
+          'Reusing the exact same weight matrix for both the input token embedding and the pre-softmax output projection layer.',
+          'Tying the encoder parameters to the decoder parameters.',
+          'Freezing half the attention heads during fine-tuning.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Weight tying shares the matrix W_emb (V x d) between input lookup and output logit projection, reducing parameter footprint and improving semantic generalization.',
+        topic: 'Architecture'
+      },
+      {
+        id: 'q-16',
+        question: 'Why do modern architectures like GPT-4 and LLaMA prefer Gaussian Error Linear Unit (GELU) or SwiGLU over traditional ReLU?',
+        options: [
+          'GELU has zero parameters and cannot be differentiated.',
+          'GELU is a smooth, non-monotonic function that prevents "dead neurons" by allowing small negative gradients.',
+          'ReLU is mathematically incompatible with GPUs.',
+          'GELU reduces sequence length by 50%.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'GELU weights inputs by their probability under a Gaussian distribution, providing a smooth continuous curve with non-zero curvature that facilitates faster and more stable optimization.',
+        topic: 'Activation'
+      },
+      {
+        id: 'q-17',
+        question: 'In the Softmax formula Softmax(z / T), what effect does increasing the temperature parameter T (e.g., T = 2.0) have on generation?',
+        options: [
+          'It makes the probability distribution sharper and more deterministic.',
+          'It flattens the logits toward a uniform distribution, increasing randomness and diversity.',
+          'It completely forces greedy argmax selection.',
+          'It doubles the learning rate.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Dividing logits by a larger T diminishes differences between scores, yielding a softer, more uniform distribution with higher entropy.',
+        topic: 'Sampling'
+      },
+      {
+        id: 'q-18',
+        question: 'How does Multi-Query Attention (MQA) modify Multi-Head Attention to conserve memory during LLM inference?',
+        options: [
+          'It uses multiple Queries, but all Query heads share a single Key head and a single Value head.',
+          'It eliminates Query vectors completely.',
+          'It doubles the number of Key and Value heads.',
+          'It requires 4x more GPU memory bandwidth.'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'MQA keeps multiple query heads but projects only 1 key head and 1 value head, drastically reducing KV cache memory bandwidth by a factor equal to the number of heads (e.g. 8x).',
+        topic: 'Attention-Variants'
+      },
+      {
+        id: 'q-19',
+        question: 'What is Grouped-Query Attention (GQA), as adopted in LLaMA-2 and LLaMA-3?',
+        options: [
+          'An architecture that groups tokens into clusters before computing attention.',
+          'A middle-ground between MHA and MQA where query heads are partitioned into G groups, each sharing one key and value head.',
+          'A technique to train multiple distinct models together.',
+          'An attention mechanism restricted strictly to diagonal elements.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'GQA groups query heads (e.g., 8 groups for 32 query heads) to achieve near-MHA model quality while preserving the majority of MQA memory bandwidth savings.',
+        topic: 'Attention-Variants'
+      },
+      {
+        id: 'q-20',
+        question: 'What is the fundamental scaling limitation of the full quadratic attention matrix when scaling to 1,000,000+ context tokens?',
+        options: [
+          'The parameter count grows exponentially with context length.',
+          'The N x N attention matrix requires quadratic memory O(N^2), quickly exceeding total GPU memory capacity for large N.',
+          'Floating point numbers become undefined when N > 10,000.',
+          'Tokens forget their grammatical parts of speech.'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Because attention pairs every token with every other token, storing the attention score matrix scales as O(N^2), demanding hundreds of gigabytes of RAM for million-token sequences unless linear/sparse mechanisms are employed.',
+        topic: 'Scalability'
       }
     ],
     examQuestions: {
