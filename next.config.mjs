@@ -8,6 +8,8 @@ const __dirname = path.dirname(__filename);
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  compress: true,
+  swcMinify: true,
   headers: async () => [
     {
       source: '/:path*',
@@ -40,10 +42,33 @@ const nextConfig = {
           key: 'X-XSS-Protection',
           value: '1; mode=block',
         },
+        {
+          key: 'Content-Security-Policy',
+          value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; media-src 'self' https: blob:; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://generativelanguage.googleapis.com https://www.youtube.com https://api.groq.com; worker-src 'self' blob:;",
+        },
+      ],
+    },
+    {
+      source: '/_next/static/:path*',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'public, max-age=31536000, immutable',
+        },
+      ],
+    },
+    {
+      source: '/static/:path*',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'public, max-age=86400, stale-while-revalidate=604800',
+        },
       ],
     },
   ],
   experimental: {
+    optimizePackageImports: ['lucide-react'],
     serverActions: {
       bodySizeLimit: '30mb',
     },

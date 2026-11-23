@@ -101,14 +101,19 @@ describe('Storage Management Utility', () => {
 
     const newSettings = saveStoredSettings({
       geminiModel: 'gemini-2.5-pro',
+      groqApiKey: 'gsk_sample_key',
+      groqModel: 'llama-3.3-70b-versatile',
       theme: 'light',
     });
 
     expect(newSettings.geminiModel).toBe('gemini-2.5-pro');
+    expect(newSettings.groqApiKey).toBe('gsk_sample_key');
+    expect(newSettings.groqModel).toBe('llama-3.3-70b-versatile');
     expect(newSettings.theme).toBe('light');
 
     const retrieved = getStoredSettings();
     expect(retrieved.geminiModel).toBe('gemini-2.5-pro');
+    expect(retrieved.groqApiKey).toBe('gsk_sample_key');
     expect(retrieved.theme).toBe('light');
   });
 });

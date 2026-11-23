@@ -160,6 +160,8 @@ export default function LectureUploadZone() {
       const settings = getStoredSettings();
       const apiKey = settings.geminiApiKey || '';
       const model = settings.geminiModel || 'gemini-2.5-flash';
+      const groqApiKey = settings.groqApiKey || '';
+      const groqModel = settings.groqModel || 'llama-3.3-70b-versatile';
 
       let response: Response;
 
@@ -170,6 +172,8 @@ export default function LectureUploadZone() {
             'Content-Type': 'application/json',
             'x-gemini-api-key': apiKey,
             'x-gemini-model': model,
+            'x-groq-api-key': groqApiKey,
+            'x-groq-model': groqModel,
           },
           body: JSON.stringify({
             youtubeUrl: youtubeUrl.trim(),
@@ -190,6 +194,8 @@ export default function LectureUploadZone() {
           headers: {
             'x-gemini-api-key': apiKey,
             'x-gemini-model': model,
+            'x-groq-api-key': groqApiKey,
+            'x-groq-model': groqModel,
           },
           body: formData,
         });
@@ -200,6 +206,8 @@ export default function LectureUploadZone() {
             'Content-Type': 'application/json',
             'x-gemini-api-key': apiKey,
             'x-gemini-model': model,
+            'x-groq-api-key': groqApiKey,
+            'x-groq-model': groqModel,
           },
           body: JSON.stringify({
             title: lectureTitle || 'Lecture Notes',

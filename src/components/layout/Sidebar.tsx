@@ -27,13 +27,31 @@ export default function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [lectureCount, setLectureCount] = useState(0);
   const [hasApiKey, setHasApiKey] = useState(false);
+  const [engineStatus, setEngineStatus] = useState('Gemini 2.5 Flash');
+  const [keyType, setKeyType] = useState('Demo mode');
 
   useEffect(() => {
     const updateStats = () => {
       const lecs = getStoredLectures();
       setLectureCount(lecs.length);
       const settings = getStoredSettings();
-      setHasApiKey(Boolean(settings.geminiApiKey));
+      const hasGemini = Boolean(settings.geminiApiKey);
+      const hasGroq = Boolean(settings.groqApiKey);
+      setHasApiKey(hasGemini || hasGroq);
+
+      if (hasGemini && hasGroq) {
+        setEngineStatus('Gemini + Groq Failover');
+        setKeyType('Dual AI Engines Active');
+      } else if (hasGemini) {
+        setEngineStatus('Gemini 2.5 Flash');
+        setKeyType('Custom Gemini Key');
+      } else if (hasGroq) {
+        setEngineStatus('Groq LLaMA 3.3');
+        setKeyType('Groq Engine Active');
+      } else {
+        setEngineStatus('Gemini 2.5 Flash');
+        setKeyType('Engine ready • Demo mode');
+      }
     };
 
     updateStats();
@@ -176,13 +194,13 @@ export default function Sidebar() {
             <div className="flex items-center gap-1.5">
               <Cpu className="w-3.5 h-3.5 text-indigo-500" />
               <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                Gemini 2.5 Flash
+                {engineStatus}
               </span>
             </div>
             <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm" />
           </div>
           <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
-            {hasApiKey ? 'Custom API Key active' : 'Engine ready • Demo mode'}
+            {keyType}
           </p>
         </div>
 

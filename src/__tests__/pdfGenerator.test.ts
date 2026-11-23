@@ -29,8 +29,8 @@ jest.mock('jspdf', () => {
 });
 
 describe('PDF Generation Utility', () => {
-  it('should generate and download PDF study guide without errors', () => {
+  it('should generate and download PDF study guide without errors', async () => {
     const lecture = DEMO_LECTURES[0];
-    expect(() => exportLectureToPdf(lecture)).not.toThrow();
+    await expect(exportLectureToPdf(lecture)).resolves.not.toThrow();
   });
 });

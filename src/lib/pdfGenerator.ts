@@ -1,7 +1,15 @@
-import { jsPDF } from 'jspdf';
 import { Lecture } from '@/types/lecture';
 
-export function exportLectureToPdf(lecture: Lecture): void {
+/**
+ * Dynamically exports a comprehensive, multi-page study guide PDF for a lecture.
+ * Uses lazy dynamic import of jsPDF to ensure optimal bundle efficiency and fast First Contentful Paint.
+ * 
+ * @param lecture - The structured Lecture object containing summary, notes, quiz, formulas, etc.
+ * @returns Promise that resolves once the PDF download is initiated in the browser.
+ */
+export async function exportLectureToPdf(lecture: Lecture): Promise<void> {
+  const { jsPDF } = await import('jspdf');
+
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',

@@ -7,6 +7,8 @@ const SETTINGS_STORAGE_KEY = 'lecturelens_settings_v2';
 export const DEFAULT_SETTINGS: UserSettings = {
   geminiApiKey: '',
   geminiModel: 'gemini-2.5-flash',
+  groqApiKey: '',
+  groqModel: 'llama-3.3-70b-versatile',
   theme: 'dark',
   notesDetailLevel: 'standard',
   targetAudience: 'university',

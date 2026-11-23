@@ -4,6 +4,7 @@ import { SYSTEM_PROMPT } from '@/lib/geminiPrompt';
 import { Lecture, SourceType } from '@/types/lecture';
 import { getYouTubeLectureData } from '@/lib/youtube';
 import { checkRateLimit } from '@/lib/rateLimit';
+import { generateLectureWithGroq } from '@/lib/groq';
 
 export const maxDuration = 120;
 
@@ -113,16 +114,24 @@ export async function POST(req: NextRequest) {
       subject = 'General Studies';
     }
 
-    // Determine API Key and Model
+    // Determine API Key and Model configurations
     const headerApiKey = req.headers.get('x-gemini-api-key');
     const headerModel = req.headers.get('x-gemini-model');
-    const apiKey = (headerApiKey && headerApiKey.trim()) || process.env.GEMINI_API_KEY || '';
-    const modelName = (headerModel && headerModel.trim()) || process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const headerGroqKey = req.headers.get('x-groq-api-key');
+    const headerGroqModel = req.headers.get('x-groq-model');
 
-    // If Gemini API Key is provided, use official @google/genai SDK
-    if (apiKey) {
+    const geminiApiKey = (headerApiKey && headerApiKey.trim()) || process.env.GEMINI_API_KEY || '';
+    const geminiModel = (headerModel && headerModel.trim()) || process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const groqApiKey = (headerGroqKey && headerGroqKey.trim()) || process.env.GROQ_API_KEY || '';
+    const groqModel = (headerGroqModel && headerGroqModel.trim()) || process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+
+    let parsedData: any = null;
+    let provider: 'gemini' | 'groq' | 'fallback' = 'fallback';
+
+    // Tier 1: Try Primary Google Gemini API
+    if (geminiApiKey) {
       try {
-        const ai = new GoogleGenAI({ apiKey });
+        const ai = new GoogleGenAI({ apiKey: geminiApiKey });
         const parts: any[] = [];
 
         if (fileBuffer) {
@@ -147,7 +156,7 @@ Follow all instructions in the system prompt. Return purely valid JSON according
         parts.push({ text: userPrompt });
 
         const response = await ai.models.generateContent({
-          model: modelName,
+          model: geminiModel,
           contents: parts,
           config: {
             systemInstruction: SYSTEM_PROMPT,
@@ -156,108 +165,145 @@ Follow all instructions in the system prompt. Return purely valid JSON according
         });
 
         const responseText = response.text || '';
-        let parsedData: any = null;
-
         try {
           parsedData = JSON.parse(responseText);
-        } catch (e) {
+        } catch {
           const cleaned = responseText.replace(/```json/gi, '').replace(/```/g, '').trim();
           parsedData = JSON.parse(cleaned);
         }
-
-        const lectureId = 'lec-' + Date.now();
-        const lecture: Lecture = {
-          id: lectureId,
-          title: parsedData.title || title,
-          subject: parsedData.subject || subject,
-          createdAt: new Date().toISOString(),
-          durationMinutes: parsedData.durationMinutes || 45,
-          sourceType,
-          sourceFileName: fileName || undefined,
-          sourceFileSize: fileSize || undefined,
-          youtubeUrl: youtubeUrl || undefined,
-          youtubeThumbnail: youtubeThumbnail || undefined,
-          youtubeAuthor: youtubeAuthor || undefined,
-          status: 'ready',
-          summary: parsedData.summary || {
-            tldr: 'Study material synthesized from input lecture content.',
-            keyTakeaways: ['Primary concepts summarized.', 'Core principles extracted.'],
-            detailedSummary: 'Full notes available in structured sections.',
-          },
-          notes: parsedData.notes || '# Study Notes\nContent processed from source.',
-          keyConcepts: (parsedData.keyConcepts || []).map((kc: any, i: number) => ({
-            id: kc.id || `kc-${i + 1}`,
-            term: kc.term || 'Key Concept',
-            definition: kc.definition || '',
-            importance: kc.importance || 'high',
-            category: kc.category || subject,
-            example: kc.example || undefined,
-          })),
-          formulas: (parsedData.formulas || []).map((f: any, i: number) => ({
-            id: f.id || `f-${i + 1}`,
-            name: f.name || 'Formula',
-            formula: f.formula || '',
-            description: f.description || '',
-            variables: f.variables || [],
-            units: f.units || undefined,
-          })),
-          flashcards: (parsedData.flashcards || []).map((fc: any, i: number) => ({
-            id: fc.id || `fc-${i + 1}`,
-            front: fc.front || 'Question',
-            back: fc.back || 'Answer',
-            category: fc.category || subject,
-            difficulty: fc.difficulty || 'medium',
-            mastered: false,
-          })),
-          quiz: (parsedData.quiz || []).map((q: any, i: number) => ({
-            id: q.id || `q-${i + 1}`,
-            question: q.question || '',
-            options: q.options || ['Option A', 'Option B', 'Option C', 'Option D'],
-            correctAnswerIndex: typeof q.correctAnswerIndex === 'number' ? q.correctAnswerIndex : 0,
-            explanation: q.explanation || '',
-            topic: q.topic || subject,
-          })),
-          examQuestions: {
-            shortAnswer: (parsedData.examQuestions?.shortAnswer || []).map((sa: any, i: number) => ({
-              id: sa.id || `sa-${i + 1}`,
-              question: sa.question || '',
-              sampleAnswer: sa.sampleAnswer || '',
-              keyPoints: sa.keyPoints || [],
-              marks: sa.marks || 4,
-            })),
-            longAnswer: (parsedData.examQuestions?.longAnswer || []).map((la: any, i: number) => ({
-              id: la.id || `la-${i + 1}`,
-              question: la.question || '',
-              sampleAnswer: la.sampleAnswer || '',
-              markingRubric: la.markingRubric || [],
-              marks: la.marks || 10,
-            })),
-          },
-          transcript: youtubeTranscriptItems.length > 0
-            ? youtubeTranscriptItems
-            : Array.isArray(parsedData.transcript)
-            ? parsedData.transcript
-            : [
-                {
-                  time: '00:00:00',
-                  speaker: youtubeAuthor || 'Instructor',
-                  text: rawText || `Lecture content from ${title}`,
-                },
-              ],
-        };
-
-        return NextResponse.json({ success: true, lecture, isLiveGemini: true });
+        provider = 'gemini';
       } catch (geminiError: any) {
-        console.error('Gemini API execution error:', geminiError);
-        return NextResponse.json(
-          {
-            success: false,
-            error: geminiError?.message || 'Error processing lecture with Gemini API.',
-            canFallback: true,
-          },
-          { status: 400 }
-        );
+        console.warn('Primary Gemini API execution error, checking fallback options:', geminiError?.message);
+
+        // Tier 2 Fallback: If Gemini hits quota limit or throws error, fall back to Groq LLaMA 3.3
+        if (groqApiKey) {
+          console.log('Initiating automatic fallback to Groq inference engine...');
+          try {
+            parsedData = await generateLectureWithGroq({
+              apiKey: groqApiKey,
+              model: groqModel,
+              title,
+              subject,
+              sourceType,
+              rawText,
+              youtubeUrl,
+              youtubeAuthor,
+            });
+            provider = 'groq';
+          } catch (groqError: any) {
+            console.error('Groq fallback execution error:', groqError);
+          }
+        }
       }
+    } else if (groqApiKey) {
+      // Direct execution with Groq when Gemini key is empty but Groq key is present
+      try {
+        parsedData = await generateLectureWithGroq({
+          apiKey: groqApiKey,
+          model: groqModel,
+          title,
+          subject,
+          sourceType,
+          rawText,
+          youtubeUrl,
+          youtubeAuthor,
+        });
+        provider = 'groq';
+      } catch (groqError: any) {
+        console.error('Direct Groq execution error:', groqError);
+      }
+    }
+
+    // If live AI synthesis succeeded (via Gemini or Groq fallback), construct full lecture
+    if (parsedData) {
+      const lectureId = 'lec-' + Date.now();
+      const lecture: Lecture = {
+        id: lectureId,
+        title: parsedData.title || title,
+        subject: parsedData.subject || subject,
+        createdAt: new Date().toISOString(),
+        durationMinutes: parsedData.durationMinutes || 45,
+        sourceType,
+        sourceFileName: fileName || undefined,
+        sourceFileSize: fileSize || undefined,
+        youtubeUrl: youtubeUrl || undefined,
+        youtubeThumbnail: youtubeThumbnail || undefined,
+        youtubeAuthor: youtubeAuthor || undefined,
+        status: 'ready',
+        summary: parsedData.summary || {
+          tldr: 'Study material synthesized from input lecture content.',
+          keyTakeaways: ['Primary concepts summarized.', 'Core principles extracted.'],
+          detailedSummary: 'Full notes available in structured sections.',
+        },
+        notes: parsedData.notes || '# Study Notes\nContent processed from source.',
+        keyConcepts: (parsedData.keyConcepts || []).map((kc: any, i: number) => ({
+          id: kc.id || `kc-${i + 1}`,
+          term: kc.term || 'Key Concept',
+          definition: kc.definition || '',
+          importance: kc.importance || 'high',
+          category: kc.category || subject,
+          example: kc.example || undefined,
+        })),
+        formulas: (parsedData.formulas || []).map((f: any, i: number) => ({
+          id: f.id || `f-${i + 1}`,
+          name: f.name || 'Formula',
+          formula: f.formula || '',
+          description: f.description || '',
+          variables: f.variables || [],
+          units: f.units || undefined,
+        })),
+        flashcards: (parsedData.flashcards || []).map((fc: any, i: number) => ({
+          id: fc.id || `fc-${i + 1}`,
+          front: fc.front || 'Question',
+          back: fc.back || 'Answer',
+          category: fc.category || subject,
+          difficulty: fc.difficulty || 'medium',
+          mastered: false,
+        })),
+        quiz: (parsedData.quiz || []).map((q: any, i: number) => ({
+          id: q.id || `q-${i + 1}`,
+          question: q.question || '',
+          options: q.options || ['Option A', 'Option B', 'Option C', 'Option D'],
+          correctAnswerIndex: typeof q.correctAnswerIndex === 'number' ? q.correctAnswerIndex : 0,
+          explanation: q.explanation || '',
+          topic: q.topic || subject,
+        })),
+        examQuestions: {
+          shortAnswer: (parsedData.examQuestions?.shortAnswer || []).map((sa: any, i: number) => ({
+            id: sa.id || `sa-${i + 1}`,
+            question: sa.question || '',
+            sampleAnswer: sa.sampleAnswer || '',
+            keyPoints: sa.keyPoints || [],
+            marks: sa.marks || 4,
+          })),
+          longAnswer: (parsedData.examQuestions?.longAnswer || []).map((la: any, i: number) => ({
+            id: la.id || `la-${i + 1}`,
+            question: la.question || '',
+            sampleAnswer: la.sampleAnswer || '',
+            markingRubric: la.markingRubric || [],
+            marks: la.marks || 10,
+          })),
+        },
+        transcript: youtubeTranscriptItems.length > 0
+          ? youtubeTranscriptItems
+          : Array.isArray(parsedData.transcript)
+          ? parsedData.transcript
+          : [
+              {
+                time: '00:00:00',
+                speaker: youtubeAuthor || 'Instructor',
+                text: rawText || `Lecture content from ${title}`,
+              },
+            ],
+      };
+
+      return NextResponse.json({
+        success: true,
+        lecture,
+        provider,
+        isLiveGemini: provider === 'gemini',
+        isLiveGroq: provider === 'groq',
+      });
     }
 
     // Fallback / Demonstration Mode (When no API key is provided)

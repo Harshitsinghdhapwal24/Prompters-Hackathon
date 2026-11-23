@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import confetti from 'canvas-confetti';
 import {
   HelpCircle,
   CheckCircle2,
@@ -48,15 +47,18 @@ export default function PracticeQuiz({ quiz }: PracticeQuizProps) {
 
     if (Object.keys(updated).length === quiz.length) {
       setTimeout(() => {
-        try {
-          confetti({
-            particleCount: 70,
-            spread: 60,
-            origin: { y: 0.6 },
+        import('canvas-confetti')
+          .then((m) => {
+            const fireConfetti = m.default;
+            fireConfetti({
+              particleCount: 70,
+              spread: 60,
+              origin: { y: 0.6 },
+            });
+          })
+          .catch(() => {
+            // Ignore if canvas-confetti fails or is unavailable in test environment
           });
-        } catch (e) {
-          // ignore
-        }
       }, 400);
     }
   };

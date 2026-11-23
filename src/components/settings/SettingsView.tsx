@@ -11,6 +11,7 @@ import {
   Check,
   ExternalLink,
   ShieldCheck,
+  Zap,
 } from 'lucide-react';
 import {
   getStoredSettings,
@@ -25,6 +26,7 @@ export default function SettingsView() {
   const { theme, setTheme } = useTheme();
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
   const [apiKeyInput, setApiKeyInput] = useState('');
+  const [groqApiKeyInput, setGroqApiKeyInput] = useState('');
   const [savedBanner, setSavedBanner] = useState(false);
   const [resetDone, setResetDone] = useState(false);
 
@@ -32,6 +34,7 @@ export default function SettingsView() {
     const s = getStoredSettings();
     setSettings(s);
     setApiKeyInput(s.geminiApiKey || '');
+    setGroqApiKeyInput(s.groqApiKey || '');
   }, []);
 
   const handleSave = (e: React.FormEvent) => {
@@ -39,6 +42,8 @@ export default function SettingsView() {
     const updated = saveStoredSettings({
       geminiApiKey: apiKeyInput.trim(),
       geminiModel: settings.geminiModel,
+      groqApiKey: groqApiKeyInput.trim(),
+      groqModel: settings.groqModel || 'llama-3.3-70b-versatile',
       notesDetailLevel: settings.notesDetailLevel,
       targetAudience: settings.targetAudience,
     });
@@ -167,6 +172,82 @@ export default function SettingsView() {
                 <span className="text-[10px] text-slate-400">{m.tag}</span>
               </label>
             ))}
+          </div>
+        </div>
+
+        {/* Groq Fallback Inference Engine */}
+        <div className="p-5 rounded-2xl bg-white dark:bg-[#0e1422] border border-slate-200/80 dark:border-slate-800/80 shadow-subtle space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400">
+                <Zap className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                  Groq Fallback API Key (High-Speed Backup)
+                </h3>
+              </div>
+            </div>
+            <a
+              href="https://console.groq.com/keys"
+              target="_blank"
+              rel="noreferrer"
+              className="text-[11px] font-medium text-amber-600 dark:text-amber-400 hover:underline inline-flex items-center gap-1"
+            >
+              Get Free Groq Key <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            Automated zero-downtime failover: If Google Gemini encounters rate limits (HTTP 429) or quota depletion, LectureLens automatically falls back to Groq for ultra-low latency generation.
+          </p>
+
+          <label htmlFor="groq-api-key-input" className="sr-only">
+            Groq API Key
+          </label>
+          <input
+            id="groq-api-key-input"
+            type="password"
+            value={groqApiKeyInput}
+            onChange={(e) => setGroqApiKeyInput(e.target.value)}
+            placeholder="gsk_..."
+            aria-label="Groq Fallback API Key"
+            className="w-full px-3.5 py-2 text-xs sm:text-sm font-mono bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 text-slate-900 dark:text-slate-100 placeholder-slate-400"
+          />
+
+          <div className="pt-2">
+            <span className="block text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-2">
+              Groq Architecture
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {[
+                { id: 'llama-3.3-70b-versatile', name: 'LLaMA 3.3 70B', tag: 'Flagship reasoning' },
+                { id: 'llama-3.1-8b-instant', name: 'LLaMA 3.1 8B', tag: 'Ultra-fast inference' },
+                { id: 'mixtral-8x7b-32768', name: 'Mixtral 8x7B', tag: '32k token window' },
+              ].map((gm) => (
+                <label
+                  key={gm.id}
+                  className={`p-2.5 rounded-xl border cursor-pointer flex flex-col justify-between transition-all ${
+                    (settings.groqModel || 'llama-3.3-70b-versatile') === gm.id
+                      ? 'border-amber-500 bg-amber-50/30 dark:bg-amber-950/20 text-slate-900 dark:text-white'
+                      : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-xs font-semibold text-slate-900 dark:text-white">{gm.name}</span>
+                    <input
+                      type="radio"
+                      name="groqModel"
+                      value={gm.id}
+                      checked={(settings.groqModel || 'llama-3.3-70b-versatile') === gm.id}
+                      onChange={(e) => setSettings({ ...settings, groqModel: e.target.value })}
+                      className="accent-amber-500"
+                    />
+                  </div>
+                  <span className="text-[10px] text-slate-400">{gm.tag}</span>
+                </label>
+              ))}
+            </div>
           </div>
         </div>
 

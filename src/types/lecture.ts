@@ -94,6 +94,8 @@ export interface Lecture {
 export interface UserSettings {
   geminiApiKey: string;
   geminiModel: string;
+  groqApiKey?: string;
+  groqModel?: string;
   theme: 'dark' | 'light';
   notesDetailLevel: 'concise' | 'standard' | 'comprehensive';
   targetAudience: 'university' | 'competitive_exam' | 'quick_review';
